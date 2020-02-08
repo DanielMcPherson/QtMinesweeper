@@ -117,7 +117,7 @@ void Cell::mousePressEvent(QMouseEvent *event)
             click();
             emit clicked();
         }
-    } else if (event->button() == Qt::RightButton) {
+    } else if (event->button() == Qt::RightButton and !m_cleared) {
         // Right click to flag a cell
         m_flagged = !m_flagged;
         drawLabel();
