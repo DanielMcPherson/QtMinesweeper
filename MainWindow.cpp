@@ -89,6 +89,10 @@ void MainWindow::clickNeighboringCells(int row, int col)
                         if (m_board.bombCount(row, col) == 0) {
                             stack.push(QPoint(row, col));
                         }
+                        // If this is a bomb, game is over
+                        if (m_board.hasBomb(row, col)) {
+                            clickAllCells();
+                        }
                     }
                 }
             }
