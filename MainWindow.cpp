@@ -15,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent)
     // Maintain board state seperately from UI
     m_boardSize = 8;
     m_numBombs = 10;
+    m_numSqauresToClear = m_boardSize * m_boardSize - m_numBombs;
+    m_numCleared = 0;
     m_board.initialize(m_boardSize, m_boardSize);
     m_board.setBombs(m_numBombs);
 
@@ -57,13 +59,28 @@ MainWindow::~MainWindow()
 
 void MainWindow::cellClicked(int row, int col)
 {
+    clearCell(row, col);
+
     // If this cell has no surrounding bombs, clear all surrounding cells
     if (m_board.bombCount(row, col) == 0) {
         clearNeighboringCells(row, col);
     }
+}
+
+void MainWindow::clearCell(int row, int col)
+{
     // If this cell is a bomb, game is over
     if (m_board.hasBomb(row, col)) {
         clearAllCells();
+        return;
+    }
+
+    m_numCleared++;
+
+    qDebug() << "Cells cleared: " << m_numCleared << ", cells remaining: " << m_numSqauresToClear - m_numCleared;
+    if (m_numCleared >= m_numSqauresToClear) {
+        // Player wins
+        qDebug() << "You win!";
     }
 }
 
@@ -84,14 +101,11 @@ void MainWindow::clearNeighboringCells(int row, int col)
                     if (!cell->isFlagged() && !cell->isCleared()) {
                         // Clear cell
                         cell->click();
+                        clearCell(row, col);
                         // If this is another empty cell, add it to the stack and
                         // clear its neighbors as well
                         if (m_board.bombCount(row, col) == 0) {
                             stack.push(QPoint(row, col));
-                        }
-                        // If this is a bomb, game is over
-                        if (m_board.hasBomb(row, col)) {
-                            clearAllCells();
                         }
                     }
                 }

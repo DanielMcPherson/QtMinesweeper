@@ -19,13 +19,15 @@ private:
 
 private slots:
     void cellClicked(int row, int col);
+    void clearCell(int row, int col);
     void clearNeighboringCells(int row, int col);
     void clearAllCells();
 
 private:
     int m_boardSize;
     int m_numBombs;
-
+    int m_numSqauresToClear;
+    int m_numCleared;
     Board m_board;
     QVector<Cell *> m_cells;
 };
