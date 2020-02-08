@@ -14,11 +14,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Maintain board state seperately from UI
     m_boardSize = 8;
-    m_numBombs = 10;
-    m_numSqauresToClear = m_boardSize * m_boardSize - m_numBombs;
+    m_numMines = 10;
+    m_numSqauresToClear = m_boardSize * m_boardSize - m_numMines;
     m_numCleared = 0;
     m_board.initialize(m_boardSize, m_boardSize);
-    m_board.setBombs(m_numBombs);
+    m_board.setMines(m_numMines);
 
     // Draw a grid of cell widgets
     auto boardWidget = new QWidget;
@@ -28,12 +28,12 @@ MainWindow::MainWindow(QWidget *parent)
     for (int row = 0; row < m_boardSize; row++) {
         for (int col = 0; col < m_boardSize; col++) {
             auto cell = new Cell();
-            if (m_board.hasBomb(row, col)) {
+            if (m_board.hasMine(row, col)) {
                 cell->setLabel("X");
             } else {
-                int bombCount = m_board.bombCount(row, col);
-                if (m_board.bombCount(row, col) > 0) {
-                    cell->setLabel(QString::number(bombCount));
+                int mineCount = m_board.mineCount(row, col);
+                if (m_board.mineCount(row, col) > 0) {
+                    cell->setLabel(QString::number(mineCount));
                 } else {
                     cell->setLabel(" ");
                 }
@@ -61,16 +61,16 @@ void MainWindow::cellClicked(int row, int col)
 {
     clearCell(row, col);
 
-    // If this cell has no surrounding bombs, clear all surrounding cells
-    if (m_board.bombCount(row, col) == 0) {
+    // If this cell has no surrounding mines, clear all surrounding cells
+    if (m_board.mineCount(row, col) == 0) {
         clearNeighboringCells(row, col);
     }
 }
 
 void MainWindow::clearCell(int row, int col)
 {
-    // If this cell is a bomb, game is over
-    if (m_board.hasBomb(row, col)) {
+    // If this cell is a mine, game is over
+    if (m_board.hasMine(row, col)) {
         clearAllCells();
         return;
     }
@@ -81,6 +81,10 @@ void MainWindow::clearCell(int row, int col)
     if (m_numCleared >= m_numSqauresToClear) {
         // Player wins
         qDebug() << "You win!";
+        // ToDo: Mark any unflagged mines with flags
+        // ToDo: Should flagging the last mine be a win condition, or do we only have to check for win when
+        // clearing a square?
+        // ToDo: Don't let UI update any more (no flagging or clicking) once game is done
     }
 }
 
@@ -97,14 +101,14 @@ void MainWindow::clearNeighboringCells(int row, int col)
             for (col = point.y() - 1; col <= point.y() + 1; col++) {
                 if (isValidCell(row, col)) {
                     Cell *cell = m_cells[row * m_boardSize + col];
-                    // If cell is not flagged as a bomb and is not already cleared
+                    // If cell is not flagged and is not already cleared
                     if (!cell->isFlagged() && !cell->isCleared()) {
                         // Clear cell
                         cell->click();
                         clearCell(row, col);
                         // If this is another empty cell, add it to the stack and
                         // clear its neighbors as well
-                        if (m_board.bombCount(row, col) == 0) {
+                        if (m_board.mineCount(row, col) == 0) {
                             stack.push(QPoint(row, col));
                         }
                     }

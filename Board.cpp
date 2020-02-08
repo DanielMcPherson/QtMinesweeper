@@ -21,7 +21,7 @@ void Board::initialize(int rows, int cols)
     srand(time(NULL));
 }
 
-int Board::setBomb(int row, int col)
+int Board::setMine(int row, int col)
 {
     if (!isValidCell(row, col)) {
         return -1;
@@ -32,7 +32,7 @@ int Board::setBomb(int row, int col)
     return 0;
 }
 
-bool Board::hasBomb(int row, int col)
+bool Board::hasMine(int row, int col)
 {
     if (!isValidCell(row, col)) {
         return false;
@@ -40,7 +40,7 @@ bool Board::hasBomb(int row, int col)
     return m_board[row * m_cols + col] == -1;
 }
 
-int Board::bombCount(int row, int col)
+int Board::mineCount(int row, int col)
 {
     if (!isValidCell(row, col)) {
         return false;
@@ -48,41 +48,41 @@ int Board::bombCount(int row, int col)
     return m_board[row * m_cols + col];
 }
 
-void Board::setBombs(int numBombs)
+void Board::setMines(int numMines)
 {
-    int bombsSet = 0;
-    while (bombsSet < numBombs) {
+    int minesSet = 0;
+    while (minesSet < numMines) {
         int row = rand() % m_rows;
         int col = rand() % m_cols;
-        if (!hasBomb(row, col)) {
-            setBomb(row, col);
-            bombsSet++;
+        if (!hasMine(row, col)) {
+            setMine(row, col);
+            minesSet++;
         }
     }
-    calcBombs();
+    calcMineCounts();
 }
 
-void Board::calcBombs()
+void Board::calcMineCounts()
 {
     if (!m_board) {
         return;
     }
 
-    // Compute adjacent bomb count for all non-bomb cells
+    // Compute adjacent mine count for all non-mine cells
     for (int row = 0; row < m_rows; row++) {
         for (int col = 0; col < m_cols; col++) {
-            if (!hasBomb(row, col)) {
-                int numBombs = 0;
+            if (!hasMine(row, col)) {
+                int numMines = 0;
                 for (int i = row - 1; i <= row + 1; i++) {
                     for (int j = col - 1; j <= col + 1; j++) {
                         if (isValidCell(i, j) && !(i == row && j == col)) {
-                            if (hasBomb(i, j)) {
-                                numBombs++;
+                            if (hasMine(i, j)) {
+                                numMines++;
                             }
                         }
                     }
                 }
-                m_board[row * m_cols + col] = numBombs;
+                m_board[row * m_cols + col] = numMines;
             }
         }
     }

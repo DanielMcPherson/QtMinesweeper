@@ -25,7 +25,7 @@ private slots:
 
 private:
     int m_boardSize;
-    int m_numBombs;
+    int m_numMines;
     int m_numSqauresToClear;
     int m_numCleared;
     Board m_board;

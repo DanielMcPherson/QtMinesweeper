@@ -9,17 +9,17 @@ class Board : public QObject
 public:
     explicit Board(QObject *parent = nullptr);
     void initialize(int rows, int cols);
-    bool hasBomb(int row, int col);
-    int bombCount(int row, int col);
-    void setBombs(int numBombs);
+    bool hasMine(int row, int col);
+    int mineCount(int row, int col);
+    void setMines(int numMines);
 
 signals:
 
 
 private:
     bool isValidCell(int row, int col);
-    int setBomb(int row, int col);
-    void calcBombs();
+    int setMine(int row, int col);
+    void calcMineCounts();
 
 public slots:
 
