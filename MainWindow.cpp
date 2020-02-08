@@ -61,6 +61,10 @@ void MainWindow::cellClicked(int row, int col)
     if (m_board.bombCount(row, col) == 0) {
         clickNeighboringCells(row, col);
     }
+    // If this cell is a bomb, game is over
+    if (m_board.hasBomb(row, col)) {
+        clickAllCells();
+    }
 }
 
 void MainWindow::clickNeighboringCells(int row, int col)
@@ -88,6 +92,15 @@ void MainWindow::clickNeighboringCells(int row, int col)
                     }
                 }
             }
+        }
+    }
+}
+
+void MainWindow::clickAllCells()
+{
+    foreach (Cell *cell, m_cells) {
+        if (!cell->isRevealed()) {
+            cell->click();
         }
     }
 }

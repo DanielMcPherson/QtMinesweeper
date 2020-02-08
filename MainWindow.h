@@ -20,6 +20,7 @@ private:
 private slots:
     void cellClicked(int row, int col);
     void clickNeighboringCells(int row, int col);
+    void clickAllCells();
 
 private:
     int m_boardSize;
