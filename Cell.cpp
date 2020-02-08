@@ -15,12 +15,11 @@ Cell::Cell(QWidget *parent) : QWidget(parent)
     font.setBold(true);
     m_label->setFont(font);
     m_labelText = "";
-//    m_label->setVisible(false);
     layout->addWidget(m_label);
     layout->setAlignment(Qt::AlignCenter);
     setLayout(layout);
 
-    m_color = Qt::darkGray;
+    m_color = Qt::gray;
     m_cleared = false;
     m_flagged = false;
 
@@ -36,8 +35,14 @@ Cell::Cell(QWidget *parent) : QWidget(parent)
     m_labelColor["X"] = "Black";
 }
 
-void Cell::drawLabel(QString text)
+void Cell::drawLabel()
 {
+    QString text = "";
+    if (m_flagged) {
+        text = "F";
+    } else if (m_cleared) {
+        text = m_labelText;
+    }
     QString labelText = text;
 
     // Set text color based on label text
@@ -53,7 +58,7 @@ void Cell::drawLabel(QString text)
 void Cell::setLabel(QString text)
 {
     m_labelText = text;
-    drawLabel(m_labelText);
+    drawLabel();
 }
 
 bool Cell::isRevealed()
@@ -88,39 +93,34 @@ void Cell::leaveEvent(QEvent *event)
     if (m_cleared) {
         return;
     }
-    m_color = Qt::darkGray;
+    m_color = Qt::gray;
     repaint();
 }
 
 void Cell::click()
 {
-    m_label->setVisible(true);
     m_cleared = true;
     m_color = Qt::lightGray;
+    drawLabel();
     repaint();
 }
 
 void Cell::mousePressEvent(QMouseEvent *event)
 {
-    // If player clicks a cell that's already been revealed,
-    // click all neighboring cells
-    if (m_cleared) {
-        emit clearNeighbors();
-        return;
-    }
-
     // Left click to clear a cell
     if (event->button() == Qt::LeftButton) {
-        click();
-        emit clicked();
+        // If player clicks a cell that's already been revealed,
+        // click all neighboring cells
+        if (m_cleared) {
+            emit clearNeighbors();
+        } else {
+            click();
+            emit clicked();
+        }
     } else if (event->button() == Qt::RightButton) {
         // Right click to flag a cell
         m_flagged = !m_flagged;
-        if (m_flagged) {
-            drawLabel("F");
-        } else {
-            drawLabel(m_labelText);
-        }
+        drawLabel();
         emit rightClicked();
     }
 }

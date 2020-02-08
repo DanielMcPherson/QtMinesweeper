@@ -32,7 +32,7 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *);
 
 private:
-    void drawLabel(QString text);
+    void drawLabel();
 
 private:
     QColor m_color;
