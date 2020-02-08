@@ -10,17 +10,30 @@ Cell::Cell(QWidget *parent) : QWidget(parent)
     setFixedSize(35, 35);
     auto layout = new QHBoxLayout();
     m_label = new QLabel();
+    m_labelText = "";
 //    m_label->setVisible(false);
     layout->addWidget(m_label);
     layout->setAlignment(Qt::AlignCenter);
     setLayout(layout);
     m_color = Qt::darkGray;
     m_cleared = false;
+    m_flagged = false;
 }
 
 void Cell::setLabel(QString text)
 {
-    m_label->setText(text);
+    m_labelText = text;
+    m_label->setText(m_labelText);
+}
+
+bool Cell::isRevealed()
+{
+    return m_cleared;
+}
+
+bool Cell::isFlagged()
+{
+    return m_flagged;
 }
 
 void Cell::paintEvent(QPaintEvent *)
@@ -49,14 +62,37 @@ void Cell::leaveEvent(QEvent *event)
     repaint();
 }
 
-void Cell::mousePressEvent(QMouseEvent *)
+void Cell::click()
 {
-    if (m_cleared) {
-        return;
-    }
     m_label->setVisible(true);
     m_cleared = true;
-    emit clicked();
+    m_color = Qt::lightGray;
+    repaint();
+}
+
+void Cell::mousePressEvent(QMouseEvent *event)
+{
+    // If player clicks a cell that's already been revealed,
+    // click all neighboring cells
+    if (m_cleared) {
+        emit clearNeighbors();
+        return;
+    }
+
+    // Left click to clear a cell
+    if (event->button() == Qt::LeftButton) {
+        click();
+        emit clicked();
+    } else if (event->button() == Qt::RightButton) {
+        // Right click to flag a cell
+        m_flagged = !m_flagged;
+        if (m_flagged) {
+            m_label->setText("F");
+        } else {
+            m_label->setText(m_labelText);
+        }
+        emit rightClicked();
+    }
 }
 
 void Cell::mouseDoubleClickEvent(QMouseEvent *)
