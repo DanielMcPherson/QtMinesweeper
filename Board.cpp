@@ -18,6 +18,7 @@ void Board::initialize(int rows, int cols)
             m_board[row * m_cols + col] = 0;
         }
     }
+    srand(time(NULL));
 }
 
 int Board::setBomb(int row, int col)
