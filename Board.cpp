@@ -71,17 +71,17 @@ void Board::calcBombs()
     for (int row = 0; row < m_rows; row++) {
         for (int col = 0; col < m_cols; col++) {
             if (!hasBomb(row, col)) {
-                int bombCount = 0;
+                int numBombs = 0;
                 for (int i = row - 1; i <= row + 1; i++) {
                     for (int j = col - 1; j <= col + 1; j++) {
                         if (isValidCell(i, j) && !(i == row && j == col)) {
                             if (hasBomb(i, j)) {
-                                bombCount++;
+                                numBombs++;
                             }
                         }
                     }
                 }
-                m_board[row * m_cols + col] = bombCount;
+                m_board[row * m_cols + col] = numBombs;
             }
         }
     }
@@ -98,7 +98,7 @@ bool Board::isValidCell(int row, int col)
     if (row < 0 || row >= m_rows) {
         return false;
     }
-    if (col < 0 || col >> m_cols) {
+    if (col < 0 || col >= m_cols) {
         return false;
     }
 
