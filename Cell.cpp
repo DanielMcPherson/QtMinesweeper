@@ -124,10 +124,3 @@ void Cell::mousePressEvent(QMouseEvent *event)
         emit rightClicked();
     }
 }
-
-void Cell::mouseDoubleClickEvent(QMouseEvent *)
-{
-    if (m_cleared) {
-        return;
-    }
-}
