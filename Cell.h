@@ -2,8 +2,10 @@
 #define CELL_H
 
 #include <QWidget>
+#include <QString>
 #include <QColor>
 #include <QLabel>
+#include <QMap>
 
 class Cell : public QWidget
 {
@@ -30,9 +32,13 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *);
 
 private:
+    void drawLabel(QString text);
+
+private:
     QColor m_color;
     QLabel *m_label;
     QString m_labelText;
+    QMap<QString, QString> m_labelColor;
     bool m_cleared;
     bool m_flagged;
 };
