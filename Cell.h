@@ -13,7 +13,7 @@ class Cell : public QWidget
 public:
     explicit Cell(QWidget *parent = nullptr);
     void setLabel(QString text);
-    bool isRevealed();
+    bool isCleared();
     bool isFlagged();
     void click();
 

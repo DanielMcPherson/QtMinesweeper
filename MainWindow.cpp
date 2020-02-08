@@ -13,12 +13,12 @@ MainWindow::MainWindow(QWidget *parent)
     auto mainLayout = new QHBoxLayout();
 
     // Maintain board state seperately from UI
-    m_boardSize = 16;
-    int numBombs = 40;
+    m_boardSize = 8;
+    m_numBombs = 10;
     m_board.initialize(m_boardSize, m_boardSize);
-    m_board.setBombs(numBombs);
+    m_board.setBombs(m_numBombs);
 
-    // Draw a 16x16 grid of cell widgets
+    // Draw a grid of cell widgets
     auto boardWidget = new QWidget;
     auto boardLayout = new QGridLayout();
     boardLayout->setSpacing(2);
@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
                 }
             }
             connect(cell, &Cell::clicked, [=]() { cellClicked(row, col); });
-            connect(cell, &Cell::clearNeighbors, [=]() { clickNeighboringCells(row, col); });
+            connect(cell, &Cell::clearNeighbors, [=]() { clearNeighboringCells(row, col); });
             boardLayout->addWidget(cell, row, col);
             m_cells.append(cell);
         }
@@ -59,15 +59,15 @@ void MainWindow::cellClicked(int row, int col)
 {
     // If this cell has no surrounding bombs, clear all surrounding cells
     if (m_board.bombCount(row, col) == 0) {
-        clickNeighboringCells(row, col);
+        clearNeighboringCells(row, col);
     }
     // If this cell is a bomb, game is over
     if (m_board.hasBomb(row, col)) {
-        clickAllCells();
+        clearAllCells();
     }
 }
 
-void MainWindow::clickNeighboringCells(int row, int col)
+void MainWindow::clearNeighboringCells(int row, int col)
 {
     QStack<QPoint> stack;
     stack.push(QPoint(row, col));
@@ -75,14 +75,14 @@ void MainWindow::clickNeighboringCells(int row, int col)
     // Click all cells that touch an empty cell
     while (!stack.isEmpty()) {
         QPoint point = stack.pop();
-        // Click all cells that touch this empty cell
+        // Clear all cells that touch this empty cell
         for (row = point.x() - 1; row <= point.x() + 1; row++) {
             for (col = point.y() - 1; col <= point.y() + 1; col++) {
                 if (isValidCell(row, col)) {
                     Cell *cell = m_cells[row * m_boardSize + col];
                     // If cell is not flagged as a bomb and is not already cleared
-                    if (!cell->isFlagged() && !cell->isRevealed()) {
-                        // Reveal cell
+                    if (!cell->isFlagged() && !cell->isCleared()) {
+                        // Clear cell
                         cell->click();
                         // If this is another empty cell, add it to the stack and
                         // clear its neighbors as well
@@ -91,7 +91,7 @@ void MainWindow::clickNeighboringCells(int row, int col)
                         }
                         // If this is a bomb, game is over
                         if (m_board.hasBomb(row, col)) {
-                            clickAllCells();
+                            clearAllCells();
                         }
                     }
                 }
@@ -100,10 +100,10 @@ void MainWindow::clickNeighboringCells(int row, int col)
     }
 }
 
-void MainWindow::clickAllCells()
+void MainWindow::clearAllCells()
 {
     foreach (Cell *cell, m_cells) {
-        if (!cell->isRevealed()) {
+        if (!cell->isCleared()) {
             cell->click();
         }
     }

@@ -61,7 +61,7 @@ void Cell::setLabel(QString text)
     drawLabel();
 }
 
-bool Cell::isRevealed()
+bool Cell::isCleared()
 {
     return m_cleared;
 }
