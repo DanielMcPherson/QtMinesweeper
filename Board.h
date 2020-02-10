@@ -9,18 +9,19 @@ class Board : public QObject
     Q_OBJECT
 public:
     explicit Board(QObject *parent = nullptr);
-    void initialize(int rows, int cols);
+    void initialize(int rows, int cols, int numMines);
     bool hasMine(int row, int col);
     int mineCount(int row, int col);
-    void setMines(int numMines);
 
 signals:
 
 
 private:
     bool isValidCell(int row, int col);
-    int setMine(int row, int col);
+    void setMines(int numMines);
+    void setMine(int row, int col);
     void calcMineCounts();
+    int numSurroundingMines(int row, int col);
 
 public slots:
 

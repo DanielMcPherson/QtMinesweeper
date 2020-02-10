@@ -13,12 +13,18 @@ MainWindow::MainWindow(QWidget *parent)
     auto mainLayout = new QHBoxLayout();
 
     // Maintain board state seperately from UI
+    // Q: Does this make sense? Board object knows what cells have mines,
+    // but UI board also knows this. UI is the only one who knows if cells
+    // have been cleared or flagged.
+    // If there is separation, then UI should just report button presses
+    // and backend board should maintain state of flagged/cleared and then
+    // tell UI what to display.
+
     m_boardSize = 8;
     m_numMines = 10;
-    m_numSqauresToClear = m_boardSize * m_boardSize - m_numMines;
     m_numCleared = 0;
-    m_board.initialize(m_boardSize, m_boardSize);
-    m_board.setMines(m_numMines);
+    m_numSqauresToClear = m_boardSize * m_boardSize - m_numMines;
+    m_board.initialize(m_boardSize, m_boardSize, m_numMines);
 
     // Draw a grid of cell widgets
     auto boardWidget = new QWidget;
@@ -87,6 +93,9 @@ void MainWindow::clearCell(int row, int col)
         // ToDo: Don't let UI update any more (no flagging or clicking) once game is done
     }
 }
+
+// ToDo: Clicking on cleared cell should only clear neighboring cells if the correct number of neighboring
+// cells have been flagged
 
 void MainWindow::clearNeighboringCells(int row, int col)
 {

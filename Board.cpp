@@ -11,20 +11,23 @@ Board::Board(QObject *parent) : QObject(parent)
     srand(static_cast<unsigned int>(time(nullptr)));
 }
 
-// Initialize empty board with given dimensions
-void Board::initialize(int rows, int cols)
+// Initialize board with given dimensions and number of mines
+void Board::initialize(int rows, int cols, int numMines)
 {
     // Remember number of rows and columns
     m_rows = rows;
     m_cols = cols;
 
-    // Initialize board
+    // Initialize board with empty cells
     CellStruct cell;
     cell.cleared = false;
     cell.hasMine = false;
     cell.numNeighboringMines = 0;
     m_cells.clear();
     m_cells.fill(cell, m_rows * m_cols);
+
+    // Add mines
+    setMines(numMines);
 }
 
 // Does a given cell contain a mine?
@@ -61,42 +64,50 @@ void Board::setMines(int numMines)
 }
 
 // Set a mine on a given cell
-int Board::setMine(int row, int col)
+void Board::setMine(int row, int col)
 {
-    if (!isValidCell(row, col)) {
-        return -1;
+    if (isValidCell(row, col)) {
+        m_cells[row * m_cols + col].hasMine = true;
     }
-    m_cells[row * m_cols + col].hasMine = true;
-
-    return 0;
 }
 
-// Compute the number of neighboring mines for each cell
+// Compute the number of surrounding mines for each cell
 void Board::calcMineCounts()
 {
     if (m_cells.isEmpty()) {
         return;
     }
 
-    // Compute adjacent mine count for all non-mine cells
+    // Loop over all cells
     for (int row = 0; row < m_rows; row++) {
         for (int col = 0; col < m_cols; col++) {
-            if (!hasMine(row, col)) {
-                int numMines = 0;
-                for (int i = row - 1; i <= row + 1; i++) {
-                    for (int j = col - 1; j <= col + 1; j++) {
-                        if (isValidCell(i, j) && !(i == row && j == col)) {
-                            if (hasMine(i, j)) {
-                                numMines++;
-                            }
-                        }
-                    }
-                }
-                m_cells[row * m_cols + col].numNeighboringMines = numMines;
-            }
+            // Count number of mines surrounding this cell
+            m_cells[row * m_cols + col].numNeighboringMines = numSurroundingMines(row, col);
         }
     }
 }
+
+// Return the number of mines surrounding this cell
+int Board::numSurroundingMines(int row, int col)
+{
+    int numMines = 0;
+
+    // Loop over all surrounding cells
+    for (int i = row - 1; i <= row + 1; i++) {
+        for (int j = col - 1; j <= col + 1; j++) {
+            // If this is a valid cell and is not the cell we're counting around
+            if (isValidCell(i, j) && !(i == row && j == col)) {
+                // See if this cell has a mine
+                if (hasMine(i, j)) {
+                    numMines++;
+                }
+            }
+        }
+    }
+
+    return numMines;
+}
+
 
 // Are the given cell coordinates valid?
 bool Board::isValidCell(int row, int col)
