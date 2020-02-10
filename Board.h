@@ -12,6 +12,10 @@ public:
     void initialize(int rows, int cols, int numMines);
     bool hasMine(int row, int col);
     int mineCount(int row, int col);
+    void toggleFlag(int row, int col);
+    void clearCell(int row, int col);
+    bool isFlagged(int row, int col);
+    bool isCleared(int row, int col);
 
 signals:
 
@@ -27,6 +31,7 @@ public slots:
 
 private:
     struct CellStruct {
+        bool flagged;
         bool cleared;
         bool hasMine;
         int numNeighboringMines;

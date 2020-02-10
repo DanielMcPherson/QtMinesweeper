@@ -19,6 +19,7 @@ private:
 
 private slots:
     void cellClicked(int row, int col);
+    void flagCell(int row, int col);
     void clearCell(int row, int col);
     void clearNeighboringCells(int row, int col);
     void clearAllCells();

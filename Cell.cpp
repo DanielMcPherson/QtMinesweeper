@@ -61,16 +61,6 @@ void Cell::setLabel(QString text)
     drawLabel();
 }
 
-bool Cell::isCleared()
-{
-    return m_cleared;
-}
-
-bool Cell::isFlagged()
-{
-    return m_flagged;
-}
-
 void Cell::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
@@ -109,18 +99,12 @@ void Cell::mousePressEvent(QMouseEvent *event)
 {
     // Left click to clear a cell
     if (event->button() == Qt::LeftButton) {
-        // If player clicks a cell that's already been revealed,
-        // click all neighboring cells
-        if (m_cleared) {
-            emit clearNeighbors();
-        } else {
-            click();
-            emit clicked();
-        }
+        click();
+        emit clicked();
     } else if (event->button() == Qt::RightButton and !m_cleared) {
         // Right click to flag a cell
         m_flagged = !m_flagged;
         drawLabel();
-        emit rightClicked();
+        emit flagCell();
     }
 }

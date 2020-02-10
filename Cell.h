@@ -13,13 +13,11 @@ class Cell : public QWidget
 public:
     explicit Cell(QWidget *parent = nullptr);
     void setLabel(QString text);
-    bool isCleared();
-    bool isFlagged();
     void click();
 
 signals:
     void clicked();
-    void rightClicked();
+    void flagCell();
     void clearNeighbors();
 
 public slots:

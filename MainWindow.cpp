@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
                 }
             }
             connect(cell, &Cell::clicked, [=]() { cellClicked(row, col); });
-            connect(cell, &Cell::clearNeighbors, [=]() { clearNeighboringCells(row, col); });
+            connect(cell, &Cell::flagCell, [=]() { flagCell(row, col); });
             boardLayout->addWidget(cell, row, col);
             m_cells.append(cell);
         }
@@ -65,16 +65,40 @@ MainWindow::~MainWindow()
 
 void MainWindow::cellClicked(int row, int col)
 {
-    clearCell(row, col);
+    bool clearSurrounding = false;
 
-    // If this cell has no surrounding mines, clear all surrounding cells
-    if (m_board.mineCount(row, col) == 0) {
+    // If this cell has not been cleared already
+    if (!m_board.isCleared(row, col)) {
+        clearCell(row, col);
+        // If this cell has no surrounding mines, clear all cells around it
+        if (m_board.mineCount(row, col) == 0) {
+            clearSurrounding = true;
+        }
+    } else {
+        // If player clicks a cell that has already been cleared, clear all cells around it
+        clearSurrounding = true;
+        // ToDo: Only clear surrounding cells if mineCount number of surrounding cells have been flagged
+    }
+
+    if (clearSurrounding) {
         clearNeighboringCells(row, col);
     }
 }
 
+void MainWindow::flagCell(int row, int col)
+{
+    // Toggle flag for this cell
+    if (!m_board.isCleared(row, col)) {
+        m_board.toggleFlag(row, col);
+    }
+
+}
+
 void MainWindow::clearCell(int row, int col)
 {
+    // Clear this cell
+    m_board.clearCell(row, col);
+
     // If this cell is a mine, game is over
     if (m_board.hasMine(row, col)) {
         clearAllCells();
@@ -94,9 +118,6 @@ void MainWindow::clearCell(int row, int col)
     }
 }
 
-// ToDo: Clicking on cleared cell should only clear neighboring cells if the correct number of neighboring
-// cells have been flagged
-
 void MainWindow::clearNeighboringCells(int row, int col)
 {
     QStack<QPoint> stack;
@@ -111,7 +132,7 @@ void MainWindow::clearNeighboringCells(int row, int col)
                 if (isValidCell(row, col)) {
                     Cell *cell = m_cells[row * m_boardSize + col];
                     // If cell is not flagged and is not already cleared
-                    if (!cell->isFlagged() && !cell->isCleared()) {
+                    if (!m_board.isFlagged(row, col) && !m_board.isCleared(row, col)) {
                         // Clear cell
                         cell->click();
                         clearCell(row, col);
@@ -129,8 +150,10 @@ void MainWindow::clearNeighboringCells(int row, int col)
 
 void MainWindow::clearAllCells()
 {
-    foreach (Cell *cell, m_cells) {
-        if (!cell->isCleared()) {
+    for (int row = 0; row < m_boardSize; row++) {
+        for (int col = 0; col < m_boardSize; col++) {
+            m_board.clearCell(row, col);
+            Cell *cell = m_cells[row * m_boardSize + col];
             cell->click();
         }
     }

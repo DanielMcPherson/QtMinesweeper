@@ -20,6 +20,7 @@ void Board::initialize(int rows, int cols, int numMines)
 
     // Initialize board with empty cells
     CellStruct cell;
+    cell.flagged = false;
     cell.cleared = false;
     cell.hasMine = false;
     cell.numNeighboringMines = 0;
@@ -46,6 +47,37 @@ int Board::mineCount(int row, int col)
         return false;
     }
     return m_cells[row * m_cols + col].numNeighboringMines;
+}
+
+void Board::toggleFlag(int row, int col)
+{
+    if (isValidCell(row, col)) {
+        bool flagged = m_cells[row * m_cols + col].flagged;
+        m_cells[row * m_cols + col].flagged = !flagged;
+    }
+}
+
+void Board::clearCell(int row, int col)
+{
+    if (isValidCell(row, col)) {
+        m_cells[row * m_cols + col].cleared = true;
+    }
+}
+
+bool Board::isFlagged(int row, int col)
+{
+    if (!isValidCell(row, col)) {
+        return false;
+    }
+    return m_cells[row * m_cols + col].flagged;
+}
+
+bool Board::isCleared(int row, int col)
+{
+    if (!isValidCell(row, col)) {
+        return false;
+    }
+    return m_cells[row * m_cols + col].cleared;
 }
 
 // Set a specified number of mines randomly on the board
