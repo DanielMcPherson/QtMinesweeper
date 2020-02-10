@@ -14,14 +14,12 @@ Cell::Cell(QWidget *parent) : QWidget(parent)
     QFont font = m_label->font();
     font.setBold(true);
     m_label->setFont(font);
-    m_labelText = "";
     layout->addWidget(m_label);
     layout->setAlignment(Qt::AlignCenter);
     setLayout(layout);
 
     m_color = Qt::gray;
     m_cleared = false;
-    m_flagged = false;
 
     m_labelColor["1"] = "Blue";
     m_labelColor["2"] = "Green";
@@ -35,14 +33,9 @@ Cell::Cell(QWidget *parent) : QWidget(parent)
     m_labelColor["X"] = "Black";
 }
 
-void Cell::drawLabel()
+void Cell::drawLabel(QString text)
 {
-    QString text = "";
-    if (m_flagged) {
-        text = "F";
-    } else if (m_cleared) {
-        text = m_labelText;
-    }
+    // Decorated text to assign to label
     QString labelText = text;
 
     // Set text color based on label text
@@ -53,12 +46,6 @@ void Cell::drawLabel()
 
     // Redraw label
     m_label->setText(labelText);
-}
-
-void Cell::setLabel(QString text)
-{
-    m_labelText = text;
-    drawLabel();
 }
 
 void Cell::paintEvent(QPaintEvent *)
@@ -100,13 +87,23 @@ void Cell::clear(int count, bool mine)
 {
     m_cleared = true;
     m_color = Qt::lightGray;
+    QString labelText = "";
     if (mine) {
-        m_labelText = "X";
-    } else {
-        m_labelText = count ? QString::number(count) : "";
+        labelText = "X";
+    } else if (count > 0) {
+        labelText = QString::number(count);
     }
-    drawLabel();
+    drawLabel(labelText);
     repaint();
+}
+
+void Cell::flag(bool flagged)
+{
+    if (flagged) {
+        drawLabel("F");
+    } else {
+        drawLabel("");
+    }
 }
 
 void Cell::mousePressEvent(QMouseEvent *event)
@@ -116,8 +113,6 @@ void Cell::mousePressEvent(QMouseEvent *event)
         emit clicked();
     } else if (event->button() == Qt::RightButton and !m_cleared) {
         // Right click to flag a cell
-        m_flagged = !m_flagged;
-        drawLabel();
         emit flagCell();
     }
 }

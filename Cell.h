@@ -12,9 +12,9 @@ class Cell : public QWidget
     Q_OBJECT
 public:
     explicit Cell(QWidget *parent = nullptr);
-    void setLabel(QString text);
-    void explode();
     void clear(int count, bool mine);
+    void flag(bool flagged);
+    void explode();
 
 signals:
     void clicked();
@@ -29,15 +29,13 @@ protected:
     void mousePressEvent(QMouseEvent *event);
 
 private:
-    void drawLabel();
+    void drawLabel(QString text);
 
 private:
     QColor m_color;
     QLabel *m_label;
-    QString m_labelText;
     QMap<QString, QString> m_labelColor;
     bool m_cleared;
-    bool m_flagged;
 };
 
 #endif // CELL_H
