@@ -7,6 +7,8 @@
 #include <QLabel>
 #include <QMap>
 
+// Displays a single cell on the Minesweeper board
+
 class Cell : public QWidget
 {
     Q_OBJECT
@@ -14,6 +16,7 @@ public:
     explicit Cell(QWidget *parent = nullptr);
     void clear(int count, bool mine);
     void flag(bool flagged);
+    void misflag();
     void explode();
 
 signals:
@@ -24,8 +27,8 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent *);
-    void enterEvent(QEvent *event);
-    void leaveEvent(QEvent *event);
+    void enterEvent(QEvent *);
+    void leaveEvent(QEvent *);
     void mousePressEvent(QMouseEvent *event);
 
 private:

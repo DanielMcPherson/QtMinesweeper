@@ -147,6 +147,10 @@ void MainWindow::clearAllCells()
                 m_board.clearCell(row, col);
                 Cell *cell = m_cells[row * m_boardSize + col];
                 cell->clear(m_board.mineCount(row, col), m_board.hasMine(row, col));
+                // Mark incorrectly flagged cells
+                if (m_board.isFlagged(row, col) && !m_board.hasMine(row, col)) {
+                    cell->misflag();
+                }
             }
         }
     }
