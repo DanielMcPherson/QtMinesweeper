@@ -19,6 +19,14 @@ MainWindow::MainWindow(QWidget *parent)
     // If there is separation, then UI should just report button presses
     // and backend board should maintain state of flagged/cleared and then
     // tell UI what to display.
+    // Should Cell retain any logic about whether or not it is flagged or cleared?
+    // Ex: When the player loses, any mis-flagged cells should show a red background.
+    // Should the cell remember that it was flagged and handle coloring itself when
+    // revealed, or should GameManager (using Board) handle all of that logic and tell
+    // BoardWidget exactly what to display?
+    // Ex 2: When player clicks a cell, should Cell or BoardWidget have enough logic to
+    // reveal that cell, or just report the player input to GameManager and wait for GameManager
+    // to tell BoardWidget/Cell what to display?
 
     m_boardSize = 8;
     m_numMines = 10;
@@ -75,9 +83,11 @@ void MainWindow::cellClicked(int row, int col)
             clearSurrounding = true;
         }
     } else {
-        // If player clicks a cell that has already been cleared, clear all cells around it
-        clearSurrounding = true;
-        // ToDo: Only clear surrounding cells if mineCount number of surrounding cells have been flagged
+        // If player clicks a cell that has already been cleared AND the player has flagged the correct
+        // number of cells around it, clear all surrounding non-flagged cells
+        if (m_board.numSurroundingFlags(row, col) == m_board.mineCount(row, col)) {
+            clearSurrounding = true;
+        }
     }
 
     if (clearSurrounding) {
@@ -91,7 +101,6 @@ void MainWindow::flagCell(int row, int col)
     if (!m_board.isCleared(row, col)) {
         m_board.toggleFlag(row, col);
     }
-
 }
 
 void MainWindow::clearCell(int row, int col)
@@ -101,13 +110,16 @@ void MainWindow::clearCell(int row, int col)
 
     // If this cell is a mine, game is over
     if (m_board.hasMine(row, col)) {
-        clearAllCells();
+        // ToDo: Show exploded mine
+        Cell *cell = m_cells[row * m_boardSize + col];
+        cell->click();
+        doGameLost();
         return;
     }
 
     m_numCleared++;
 
-    qDebug() << "Cells cleared: " << m_numCleared << ", cells remaining: " << m_numSqauresToClear - m_numCleared;
+//    qDebug() << "Cells cleared: " << m_numCleared << ", cells remaining: " << m_numSqauresToClear - m_numCleared;
     if (m_numCleared >= m_numSqauresToClear) {
         // Player wins
         qDebug() << "You win!";
@@ -170,4 +182,11 @@ bool MainWindow::isValidCell(int row, int col)
     }
 
     return true;
+}
+
+void MainWindow::doGameLost()
+{
+    qDebug() << "You lose!";
+    clearAllCells();
+    // ToDo: Show exploded mines. Mark any mis-flagged cells.
 }

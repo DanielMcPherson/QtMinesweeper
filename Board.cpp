@@ -49,6 +49,7 @@ int Board::mineCount(int row, int col)
     return m_cells[row * m_cols + col].numNeighboringMines;
 }
 
+// Toggle the flag marking for a cell
 void Board::toggleFlag(int row, int col)
 {
     if (isValidCell(row, col)) {
@@ -57,6 +58,7 @@ void Board::toggleFlag(int row, int col)
     }
 }
 
+// Clear a cell, revealing a mine or count
 void Board::clearCell(int row, int col)
 {
     if (isValidCell(row, col)) {
@@ -64,6 +66,7 @@ void Board::clearCell(int row, int col)
     }
 }
 
+// Is this cell flagged?
 bool Board::isFlagged(int row, int col)
 {
     if (!isValidCell(row, col)) {
@@ -72,12 +75,37 @@ bool Board::isFlagged(int row, int col)
     return m_cells[row * m_cols + col].flagged;
 }
 
+// Has this cell been cleared?
 bool Board::isCleared(int row, int col)
 {
     if (!isValidCell(row, col)) {
         return false;
     }
     return m_cells[row * m_cols + col].cleared;
+}
+
+// Return the number of surrounding cells that have been flagged
+int Board::numSurroundingFlags(int row, int col)
+{
+    if (!isValidCell(row, col)) {
+        return 0;
+    }
+
+    int numFlags = 0;
+    // Loop over all surrounding cells
+    for (int i = row - 1; i <= row + 1; i++) {
+        for (int j = col - 1; j <= col + 1; j++) {
+            // If this is a valid cell and is not the cell we're counting around
+            if (isValidCell(i, j) && !(i == row && j == col)) {
+                // See if this cell is flagged
+                if (isFlagged(i, j)) {
+                    numFlags++;
+                }
+            }
+        }
+    }
+
+    return numFlags;
 }
 
 // Set a specified number of mines randomly on the board

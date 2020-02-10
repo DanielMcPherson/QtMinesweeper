@@ -16,6 +16,7 @@ public:
     void clearCell(int row, int col);
     bool isFlagged(int row, int col);
     bool isCleared(int row, int col);
+    int numSurroundingFlags(int row, int col);
 
 signals:
 

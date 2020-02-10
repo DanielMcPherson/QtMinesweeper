@@ -16,6 +16,7 @@ public:
 
 private:
     bool isValidCell(int row, int col);
+    void doGameLost();
 
 private slots:
     void cellClicked(int row, int col);

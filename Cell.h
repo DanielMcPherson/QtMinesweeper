@@ -18,7 +18,6 @@ public:
 signals:
     void clicked();
     void flagCell();
-    void clearNeighbors();
 
 public slots:
 
