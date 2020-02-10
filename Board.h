@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include <QObject>
+#include <QVector>
 
 class Board : public QObject
 {
@@ -24,7 +25,12 @@ private:
 public slots:
 
 private:
-    int *m_board;
+    struct CellStruct {
+        bool cleared;
+        bool hasMine;
+        int numNeighboringMines;
+    };
+    QVector<CellStruct> m_cells;
     int m_rows;
     int m_cols;
 };

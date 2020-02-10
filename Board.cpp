@@ -2,52 +2,50 @@
 
 Board::Board(QObject *parent) : QObject(parent)
 {
+    // Initialize member variables
     m_rows = 0;
     m_cols = 0;
-    m_board = nullptr;
+    m_cells.clear();
+
+    // Seed random number generator
+    srand(static_cast<unsigned int>(time(nullptr)));
 }
 
+// Initialize empty board with given dimensions
 void Board::initialize(int rows, int cols)
 {
-    delete [] m_board;
+    // Remember number of rows and columns
     m_rows = rows;
     m_cols = cols;
-    m_board = new int[m_rows * m_cols];
-    for (int row = 0; row < m_rows; row++) {
-        for (int col = 0; col < m_cols; col++) {
-            m_board[row * m_cols + col] = 0;
-        }
-    }
-    srand(time(NULL));
+
+    // Initialize board
+    CellStruct cell;
+    cell.cleared = false;
+    cell.hasMine = false;
+    cell.numNeighboringMines = 0;
+    m_cells.clear();
+    m_cells.fill(cell, m_rows * m_cols);
 }
 
-int Board::setMine(int row, int col)
-{
-    if (!isValidCell(row, col)) {
-        return -1;
-    }
-    // Assign value to board position
-    m_board[row * m_cols + col] = -1;
-
-    return 0;
-}
-
+// Does a given cell contain a mine?
 bool Board::hasMine(int row, int col)
 {
     if (!isValidCell(row, col)) {
         return false;
     }
-    return m_board[row * m_cols + col] == -1;
+    return m_cells[row * m_cols + col].hasMine;
 }
 
+// Return the number of neighboring cells that contain mines
 int Board::mineCount(int row, int col)
 {
     if (!isValidCell(row, col)) {
         return false;
     }
-    return m_board[row * m_cols + col];
+    return m_cells[row * m_cols + col].numNeighboringMines;
 }
 
+// Set a specified number of mines randomly on the board
 void Board::setMines(int numMines)
 {
     int minesSet = 0;
@@ -62,9 +60,21 @@ void Board::setMines(int numMines)
     calcMineCounts();
 }
 
+// Set a mine on a given cell
+int Board::setMine(int row, int col)
+{
+    if (!isValidCell(row, col)) {
+        return -1;
+    }
+    m_cells[row * m_cols + col].hasMine = true;
+
+    return 0;
+}
+
+// Compute the number of neighboring mines for each cell
 void Board::calcMineCounts()
 {
-    if (!m_board) {
+    if (m_cells.isEmpty()) {
         return;
     }
 
@@ -82,17 +92,17 @@ void Board::calcMineCounts()
                         }
                     }
                 }
-                m_board[row * m_cols + col] = numMines;
+                m_cells[row * m_cols + col].numNeighboringMines = numMines;
             }
         }
     }
 }
 
-
+// Are the given cell coordinates valid?
 bool Board::isValidCell(int row, int col)
 {
     // Make sure board has been allocated
-    if (!m_board) {
+    if (m_cells.isEmpty()) {
         return false;
     }
     // Make sure row and col are within bounds
