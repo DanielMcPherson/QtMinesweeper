@@ -87,10 +87,24 @@ void Cell::leaveEvent(QEvent *event)
     repaint();
 }
 
-void Cell::click()
+void Cell::explode()
+{
+    m_cleared = true;
+    m_color = Qt::red;
+    QString labelText = "<font color=yellow>X</font>";
+    m_label->setText(labelText);
+    repaint();
+}
+
+void Cell::clear(int count, bool mine)
 {
     m_cleared = true;
     m_color = Qt::lightGray;
+    if (mine) {
+        m_labelText = "X";
+    } else {
+        m_labelText = count ? QString::number(count) : "";
+    }
     drawLabel();
     repaint();
 }
@@ -99,7 +113,6 @@ void Cell::mousePressEvent(QMouseEvent *event)
 {
     // Left click to clear a cell
     if (event->button() == Qt::LeftButton) {
-        click();
         emit clicked();
     } else if (event->button() == Qt::RightButton and !m_cleared) {
         // Right click to flag a cell

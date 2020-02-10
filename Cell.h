@@ -13,7 +13,8 @@ class Cell : public QWidget
 public:
     explicit Cell(QWidget *parent = nullptr);
     void setLabel(QString text);
-    void click();
+    void explode();
+    void clear(int count, bool mine);
 
 signals:
     void clicked();

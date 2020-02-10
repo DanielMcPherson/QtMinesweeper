@@ -27,6 +27,9 @@ MainWindow::MainWindow(QWidget *parent)
     // Ex 2: When player clicks a cell, should Cell or BoardWidget have enough logic to
     // reveal that cell, or just report the player input to GameManager and wait for GameManager
     // to tell BoardWidget/Cell what to display?
+    // Some things (ex: debugging cheat hints) are easier to implement if we tell the UI the
+    // mine count and mine locations at setup time instead of waiting for a user interaction
+    // to prompt GameManager to tell UI what to display.
 
     m_boardSize = 8;
     m_numMines = 10;
@@ -70,7 +73,6 @@ MainWindow::~MainWindow()
 
 }
 
-
 void MainWindow::cellClicked(int row, int col)
 {
     bool clearSurrounding = false;
@@ -107,19 +109,17 @@ void MainWindow::clearCell(int row, int col)
 {
     // Clear this cell
     m_board.clearCell(row, col);
+    Cell *cell = m_cells[row * m_boardSize + col];
+    cell->clear(m_board.mineCount(row, col), m_board.hasMine(row, col));
 
     // If this cell is a mine, game is over
     if (m_board.hasMine(row, col)) {
-        // ToDo: Show exploded mine
-        Cell *cell = m_cells[row * m_boardSize + col];
-        cell->click();
+        cell->explode();
         doGameLost();
         return;
     }
-
     m_numCleared++;
 
-//    qDebug() << "Cells cleared: " << m_numCleared << ", cells remaining: " << m_numSqauresToClear - m_numCleared;
     if (m_numCleared >= m_numSqauresToClear) {
         // Player wins
         qDebug() << "You win!";
@@ -146,7 +146,7 @@ void MainWindow::clearNeighboringCells(int row, int col)
                     // If cell is not flagged and is not already cleared
                     if (!m_board.isFlagged(row, col) && !m_board.isCleared(row, col)) {
                         // Clear cell
-                        cell->click();
+                        cell->clear(m_board.mineCount(row, col), m_board.hasMine(row, col));
                         clearCell(row, col);
                         // If this is another empty cell, add it to the stack and
                         // clear its neighbors as well
@@ -164,9 +164,11 @@ void MainWindow::clearAllCells()
 {
     for (int row = 0; row < m_boardSize; row++) {
         for (int col = 0; col < m_boardSize; col++) {
-            m_board.clearCell(row, col);
-            Cell *cell = m_cells[row * m_boardSize + col];
-            cell->click();
+            if (!m_board.isCleared(row, col)) {
+                m_board.clearCell(row, col);
+                Cell *cell = m_cells[row * m_boardSize + col];
+                cell->clear(m_board.mineCount(row, col), m_board.hasMine(row, col));
+            }
         }
     }
 }
