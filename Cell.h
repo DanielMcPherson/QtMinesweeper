@@ -14,10 +14,13 @@ class Cell : public QWidget
     Q_OBJECT
 public:
     explicit Cell(QWidget *parent = nullptr);
+    void setShowHints(bool showHints);
+    void setMine();
     void clear(int count, bool mine);
     void flag(bool flagged);
     void misflag();
     void explode();
+    void setGameOver();
 
 signals:
     void clicked();
@@ -39,6 +42,9 @@ private:
     QLabel *m_label;
     QMap<QString, QString> m_labelColor;
     bool m_cleared;
+    bool m_hasMine;
+    bool m_gameOver;
+    bool m_showHints;
 };
 
 #endif // CELL_H

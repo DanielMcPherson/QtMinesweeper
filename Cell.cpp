@@ -21,6 +21,9 @@ Cell::Cell(QWidget *parent) : QWidget(parent)
 
     m_color = Qt::gray;
     m_cleared = false;
+    m_hasMine = false;
+    m_showHints = false;
+    m_gameOver = false;
 
     // Use different colors for different surround mine counts
     m_labelColor["1"] = "Blue";
@@ -33,6 +36,19 @@ Cell::Cell(QWidget *parent) : QWidget(parent)
     m_labelColor["8"] = "White";
     m_labelColor["F"] = "DarkRed";
     m_labelColor["X"] = "Black";
+}
+
+void Cell::setShowHints(bool showHints)
+{
+    m_showHints = true;
+}
+
+// Tell the cell it has a mine.
+// Only used for debug/cheat hints. All other mine logic is handled
+// in the game manager.
+void Cell::setMine()
+{
+    m_hasMine = true;
 }
 
 // Update the label with a mine count, mine marker, or flag marker
@@ -65,6 +81,10 @@ void Cell::enterEvent(QEvent *)
         return;
     }
     m_color = Qt::lightGray;
+    // Use a different color for mines if we are showing hints
+    if (m_showHints && m_hasMine) {
+        m_color = Qt::white;
+    }
     repaint();
 }
 
@@ -86,6 +106,11 @@ void Cell::explode()
     QString labelText = "<font color=yellow>X</font>";
     m_label->setText(labelText);
     repaint();
+}
+
+void Cell::setGameOver()
+{
+    m_gameOver = true;
 }
 
 // Show the contents of a cell
@@ -126,6 +151,10 @@ void Cell::misflag()
 // Handle mouse event
 void Cell::mousePressEvent(QMouseEvent *event)
 {
+    if (m_gameOver) {
+        return;
+    }
+
     if (event->button() == Qt::LeftButton) {
         // Left click to clear a cell
         emit clicked();

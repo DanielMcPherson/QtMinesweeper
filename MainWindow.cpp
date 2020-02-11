@@ -31,6 +31,11 @@ MainWindow::MainWindow(QWidget *parent)
             connect(cell, &Cell::flagCell, [=]() { flagCell(row, col); });
             boardLayout->addWidget(cell, row, col);
             m_cells.append(cell);
+            // Tell the cell if has a mine (for debug/cheat hints)
+            if (m_board.hasMine(row, col)) {
+                cell->setMine();
+            }
+            cell->setShowHints(true);
         }
     }
     mainLayout->addWidget(boardWidget);
@@ -101,11 +106,7 @@ void MainWindow::clearCell(int row, int col)
 
     if (m_numCleared >= m_numSqauresToClear) {
         // Player wins
-        qDebug() << "You win!";
-        // ToDo: Mark any unflagged mines with flags
-        // ToDo: Should flagging the last mine be a win condition, or do we only have to check for win when
-        // clearing a square?
-        // ToDo: Don't let UI update any more (no flagging or clicking) once game is done
+        doGameWon();
     }
 }
 
@@ -143,14 +144,29 @@ void MainWindow::clearAllCells()
 {
     for (int row = 0; row < m_boardSize; row++) {
         for (int col = 0; col < m_boardSize; col++) {
+            Cell *cell = m_cells[row * m_boardSize + col];
+            cell->setGameOver();
             if (!m_board.isCleared(row, col)) {
                 m_board.clearCell(row, col);
-                Cell *cell = m_cells[row * m_boardSize + col];
                 cell->clear(m_board.mineCount(row, col), m_board.hasMine(row, col));
                 // Mark incorrectly flagged cells
                 if (m_board.isFlagged(row, col) && !m_board.hasMine(row, col)) {
                     cell->misflag();
                 }
+            }
+        }
+    }
+}
+
+void MainWindow::flagAllBombs()
+{
+    for (int row = 0; row < m_boardSize; row++) {
+        for (int col = 0; col < m_boardSize; col++) {
+            Cell *cell = m_cells[row * m_boardSize + col];
+            cell->setGameOver();
+            // Flag unflagged mines
+            if (!m_board.isFlagged(row, col) && m_board.hasMine(row, col)) {
+                cell->flag(true);
             }
         }
     }
@@ -173,5 +189,11 @@ void MainWindow::doGameLost()
 {
     qDebug() << "You lose!";
     clearAllCells();
-    // ToDo: Show exploded mines. Mark any mis-flagged cells.
+}
+
+void MainWindow::doGameWon()
+{
+    qDebug() << "You win!";
+    // Mark any unflagged mines with flags
+    flagAllBombs();
 }

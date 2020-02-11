@@ -17,6 +17,7 @@ public:
 private:
     bool isValidCell(int row, int col);
     void doGameLost();
+    void doGameWon();
 
 private slots:
     void cellClicked(int row, int col);
@@ -24,6 +25,7 @@ private slots:
     void clearCell(int row, int col);
     void clearNeighboringCells(int row, int col);
     void clearAllCells();
+    void flagAllBombs();
 
 private:
     int m_boardSize;
