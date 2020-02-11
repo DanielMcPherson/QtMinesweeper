@@ -34,8 +34,7 @@ private:
     int m_numSqauresToClear;
     int m_numCleared;
     Board m_board;
-    BoardWidget *m_boardUI;
-    QVector<Cell *> m_cells;
+    BoardWidget *m_ui;
 };
 
 #endif // MAINWINDOW_H
