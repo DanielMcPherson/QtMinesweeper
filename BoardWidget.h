@@ -15,6 +15,8 @@ public:
     void misflagCell(int row, int col);
     void explode(int row, int col);
     void setGameOver();
+    void setMine(int row, int col);
+    void showHints(bool showHints);
 
 signals:
     void cellClicked(int row, int col);

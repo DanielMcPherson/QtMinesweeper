@@ -40,7 +40,7 @@ Cell::Cell(QWidget *parent) : QWidget(parent)
 
 void Cell::setShowHints(bool showHints)
 {
-    m_showHints = true;
+    m_showHints = showHints;
 }
 
 // Tell the cell it has a mine.

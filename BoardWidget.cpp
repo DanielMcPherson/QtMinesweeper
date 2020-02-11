@@ -65,6 +65,16 @@ void BoardWidget::explode(int row, int col)
     cell->explode();
 }
 
+void BoardWidget::setMine(int row, int col)
+{
+    Cell *cell = getCell(row, col);
+    if (!cell) {
+        return;
+    }
+
+    cell->setMine();
+}
+
 void BoardWidget::click(int row, int col)
 {
     emit cellClicked(row, col);
@@ -91,3 +101,11 @@ void BoardWidget::setGameOver()
         cell->setGameOver();
     }
 }
+
+void BoardWidget::showHints(bool showHints)
+{
+    foreach (Cell *cell, m_cells) {
+        cell->setShowHints(showHints);
+    }
+}
+
