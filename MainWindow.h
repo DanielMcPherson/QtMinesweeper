@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QVector>
 #include "Board.h"
+#include "BoardWidget.h"
 #include "Cell.h"
 
 class MainWindow : public QMainWindow
@@ -18,14 +19,14 @@ private:
     bool isValidCell(int row, int col);
     void doGameLost();
     void doGameWon();
-
-private slots:
-    void cellClicked(int row, int col);
-    void flagCell(int row, int col);
     void clearCell(int row, int col);
     void clearNeighboringCells(int row, int col);
     void clearAllCells();
     void flagAllBombs();
+
+private slots:
+    void cellClicked(int row, int col);
+    void flagCell(int row, int col);
 
 private:
     int m_boardSize;
@@ -33,6 +34,7 @@ private:
     int m_numSqauresToClear;
     int m_numCleared;
     Board m_board;
+    BoardWidget *m_boardUI;
     QVector<Cell *> m_cells;
 };
 

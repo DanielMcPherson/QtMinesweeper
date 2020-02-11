@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "Board.h"
+#include "BoardWidget.h"
 #include "Cell.h"
 
 #include <QLayout>
@@ -18,6 +19,10 @@ MainWindow::MainWindow(QWidget *parent)
     m_numCleared = 0;
     m_numSqauresToClear = m_boardSize * m_boardSize - m_numMines;
     m_board.initialize(m_boardSize, m_boardSize, m_numMines);
+
+    m_boardUI = new BoardWidget(m_boardSize, m_boardSize);
+    connect(m_boardUI, &BoardWidget::cellClicked, this, &MainWindow::cellClicked);
+    connect(m_boardUI, &BoardWidget::cellFlagged, this, &MainWindow::flagCell);
 
     // UI: Draw a grid of cell widgets
     auto boardWidget = new QWidget;
@@ -39,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
         }
     }
     mainLayout->addWidget(boardWidget);
+    mainLayout->addWidget(m_boardUI);
 
     QWidget *centralWidget = new QWidget;
     centralWidget->setLayout(mainLayout);
@@ -86,6 +92,7 @@ void MainWindow::flagCell(int row, int col)
         m_board.toggleFlag(row, col);
         Cell *cell = m_cells[row * m_boardSize + col];
         cell->flag(m_board.isFlagged(row, col));
+        m_boardUI->flagCell(row, col, m_board.isFlagged(row, col));
     }
 }
 
@@ -95,10 +102,12 @@ void MainWindow::clearCell(int row, int col)
     m_board.clearCell(row, col);
     Cell *cell = m_cells[row * m_boardSize + col];
     cell->clear(m_board.mineCount(row, col), m_board.hasMine(row, col));
+    m_boardUI->clearCell(row, col, m_board.mineCount(row, col), m_board.hasMine(row, col));
 
     // If this cell is a mine, game is over
     if (m_board.hasMine(row, col)) {
         cell->explode();
+        m_boardUI->explode(row, col);
         doGameLost();
         return;
     }
@@ -126,8 +135,9 @@ void MainWindow::clearNeighboringCells(int row, int col)
                     // If cell is not flagged and is not already cleared
                     if (!m_board.isFlagged(row, col) && !m_board.isCleared(row, col)) {
                         // Clear cell
-                        cell->clear(m_board.mineCount(row, col), m_board.hasMine(row, col));
                         clearCell(row, col);
+                        cell->clear(m_board.mineCount(row, col), m_board.hasMine(row, col));
+                        m_boardUI->clearCell(row, col, m_board.mineCount(row, col), m_board.hasMine(row, col));
                         // If this is another empty cell, add it to the stack and
                         // clear its neighbors as well
                         if (m_board.mineCount(row, col) == 0) {
@@ -149,9 +159,11 @@ void MainWindow::clearAllCells()
             if (!m_board.isCleared(row, col)) {
                 m_board.clearCell(row, col);
                 cell->clear(m_board.mineCount(row, col), m_board.hasMine(row, col));
+                m_boardUI->clearCell(row, col, m_board.mineCount(row, col), m_board.hasMine(row, col));
                 // Mark incorrectly flagged cells
                 if (m_board.isFlagged(row, col) && !m_board.hasMine(row, col)) {
                     cell->misflag();
+                    m_boardUI->misflagCell(row, col);
                 }
             }
         }
@@ -167,6 +179,7 @@ void MainWindow::flagAllBombs()
             // Flag unflagged mines
             if (!m_board.isFlagged(row, col) && m_board.hasMine(row, col)) {
                 cell->flag(true);
+                m_boardUI->flagCell(row, col, true);
             }
         }
     }
@@ -188,12 +201,14 @@ bool MainWindow::isValidCell(int row, int col)
 void MainWindow::doGameLost()
 {
     qDebug() << "You lose!";
+    m_boardUI->setGameOver();
     clearAllCells();
 }
 
 void MainWindow::doGameWon()
 {
     qDebug() << "You win!";
+    m_boardUI->setGameOver();
     // Mark any unflagged mines with flags
     flagAllBombs();
 }
