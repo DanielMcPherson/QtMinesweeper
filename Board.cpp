@@ -6,6 +6,7 @@ Board::Board(QObject *parent) : QObject(parent)
     m_rows = 0;
     m_cols = 0;
     m_cells.clear();
+    m_mineTriggered = false;
 
     // Seed random number generator
     srand(static_cast<unsigned int>(time(nullptr)));
@@ -63,6 +64,9 @@ void Board::clearCell(int row, int col)
 {
     if (isValidCell(row, col)) {
         m_cells[row * m_cols + col].cleared = true;
+        if (m_cells[row * m_cols + col].hasMine) {
+            m_mineTriggered = true;
+        }
     }
 }
 
@@ -82,6 +86,11 @@ bool Board::isCleared(int row, int col)
         return false;
     }
     return m_cells[row * m_cols + col].cleared;
+}
+
+bool Board::mineTriggered()
+{
+    return m_mineTriggered;
 }
 
 // Return the number of surrounding cells that have been flagged

@@ -57,6 +57,11 @@ void MainWindow::cellClicked(int row, int col)
     // If this cell has not been cleared already
     if (!m_board.isCleared(row, col)) {
         clearCell(row, col);
+        // Check if the player cleared a mine
+        if (m_board.mineTriggered()) {
+            doGameLost();
+            return;
+        }
         // If this cell has no surrounding mines, clear all cells around it
         if (m_board.mineCount(row, col) == 0) {
             clearSurrounding = true;
@@ -92,10 +97,10 @@ void MainWindow::clearCell(int row, int col)
     // If this cell is a mine, game is over
     if (m_board.hasMine(row, col)) {
         m_ui->explode(row, col);
-        doGameLost();
-        return;
+    } else {
+        // Increment number of cleared non-mine cells
+        m_numCleared++;
     }
-    m_numCleared++;
 
     if (m_numCleared >= m_numSqauresToClear) {
         // Player wins
@@ -103,6 +108,9 @@ void MainWindow::clearCell(int row, int col)
     }
 }
 
+// Clear all the neighbors around a cell, either because the player has cleared
+// a cell with no surrounding mines, or because player has flagged the correct
+// number of surrounding cells and wants to clear all of the non-flagged cells
 void MainWindow::clearNeighboringCells(int row, int col)
 {
     QStack<QPoint> stack;
@@ -127,9 +135,15 @@ void MainWindow::clearNeighboringCells(int row, int col)
                 }
             }
         }
+        // Check for triggered mines after clearing all surrounding cells
+        if (m_board.mineTriggered()) {
+            doGameLost();
+            return;
+        }
     }
 }
 
+// Clear all cells after the game has been lost
 void MainWindow::clearAllCells()
 {
     for (int row = 0; row < m_boardSize; row++) {
@@ -146,6 +160,8 @@ void MainWindow::clearAllCells()
     }
 }
 
+// Called after winning the game to mark flags on any mines that were not flagged
+// by the player
 void MainWindow::flagAllBombs()
 {
     for (int row = 0; row < m_boardSize; row++) {
