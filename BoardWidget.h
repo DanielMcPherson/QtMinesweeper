@@ -3,6 +3,7 @@
 
 #include "Cell.h"
 #include <QWidget>
+#include <QLayout>
 #include <QVector>
 
 class BoardWidget : public QWidget
@@ -10,6 +11,7 @@ class BoardWidget : public QWidget
     Q_OBJECT
 public:
     explicit BoardWidget(int numRows, int numCols, QWidget *parent = nullptr);
+    void init(int numRows, int numCols);
     void clearCell(int row, int col, int count, bool mine);
     void flagCell(int row, int col, bool flagged);
     void misflagCell(int row, int col);
@@ -27,10 +29,10 @@ private slots:
     void rightClick(int row, int col);
 
 private:
-    void init(int numRows, int numCols);
     Cell *getCell(int row, int col);
 
 private:
+    QGridLayout *m_layout;
     QVector<Cell *> m_cells;
     int m_numRows;
     int m_numCols;

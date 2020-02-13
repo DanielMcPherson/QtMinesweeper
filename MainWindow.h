@@ -16,6 +16,7 @@ public:
     ~MainWindow();
 
 private:
+    void startGame();
     bool isValidCell(int row, int col);
     void doGameLost();
     void doGameWon();
@@ -27,12 +28,11 @@ private:
 private slots:
     void cellClicked(int row, int col);
     void flagCell(int row, int col);
+    void restartClicked(bool checked);
 
 private:
     int m_boardSize;
     int m_numMines;
-    int m_numSqauresToClear;
-    int m_numCleared;
     Board m_board;
     BoardWidget *m_ui;
 };

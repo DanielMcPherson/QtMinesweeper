@@ -30,6 +30,8 @@ void Board::initialize(int rows, int cols, int numMines)
 
     // Add mines
     setMines(numMines);
+    m_mineTriggered = false;
+    m_numLeftToClear = m_rows * m_cols - numMines;
 }
 
 // Does a given cell contain a mine?
@@ -63,9 +65,14 @@ void Board::toggleFlag(int row, int col)
 void Board::clearCell(int row, int col)
 {
     if (isValidCell(row, col)) {
-        m_cells[row * m_cols + col].cleared = true;
-        if (m_cells[row * m_cols + col].hasMine) {
-            m_mineTriggered = true;
+        CellStruct &cell = m_cells[row * m_cols + col];
+        if (!cell.cleared) {
+            cell.cleared = true;
+            if (cell.hasMine) {
+                m_mineTriggered = true;
+            } else {
+                m_numLeftToClear--;
+            }
         }
     }
 }
@@ -91,6 +98,11 @@ bool Board::isCleared(int row, int col)
 bool Board::mineTriggered()
 {
     return m_mineTriggered;
+}
+
+bool Board::allCellsCleared()
+{
+    return m_numLeftToClear <= 0;
 }
 
 // Return the number of surrounding cells that have been flagged

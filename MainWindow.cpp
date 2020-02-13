@@ -4,6 +4,8 @@
 #include "Cell.h"
 
 #include <QLayout>
+#include <QPushButton>
+#include <QMessageBox>
 #include <QStack>
 #include <QPoint>
 #include <QDebug>
@@ -11,19 +13,40 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    auto mainLayout = new QHBoxLayout();
+    auto mainLayout = new QVBoxLayout();
 
     // Maintain board state seperately from UI
     m_boardSize = 8;
     m_numMines = 10;
-    m_numCleared = 0;
-    m_numSqauresToClear = m_boardSize * m_boardSize - m_numMines;
-    m_board.initialize(m_boardSize, m_boardSize, m_numMines);
 
     m_ui = new BoardWidget(m_boardSize, m_boardSize);
     connect(m_ui, &BoardWidget::cellClicked, this, &MainWindow::cellClicked);
     connect(m_ui, &BoardWidget::cellFlagged, this, &MainWindow::flagCell);
     mainLayout->addWidget(m_ui);
+
+    auto buttonLayout = new QHBoxLayout();
+    auto restartButton = new QPushButton("Start Over");
+    connect(restartButton, &QPushButton::clicked, this, &MainWindow::restartClicked);
+    buttonLayout->addWidget(restartButton);
+    mainLayout->addLayout(buttonLayout);
+
+    QWidget *centralWidget = new QWidget;
+    centralWidget->setLayout(mainLayout);
+    setCentralWidget(centralWidget);
+
+    startGame();
+}
+
+MainWindow::~MainWindow()
+{
+
+}
+
+void MainWindow::startGame()
+{
+    // Initialize board
+    m_board.initialize(m_boardSize, m_boardSize, m_numMines);
+    m_ui->init(m_boardSize, m_boardSize);
 
     // Tell the UI the mines are (for debug/cheat hints)
     for (int row = 0; row < m_boardSize; row++) {
@@ -34,15 +57,6 @@ MainWindow::MainWindow(QWidget *parent)
         }
     }
     m_ui->showHints(false);
-
-    QWidget *centralWidget = new QWidget;
-    centralWidget->setLayout(mainLayout);
-    setCentralWidget(centralWidget);
-}
-
-MainWindow::~MainWindow()
-{
-
 }
 
 void MainWindow::cellClicked(int row, int col)
@@ -97,12 +111,9 @@ void MainWindow::clearCell(int row, int col)
     // If this cell is a mine, game is over
     if (m_board.hasMine(row, col)) {
         m_ui->explode(row, col);
-    } else {
-        // Increment number of cleared non-mine cells
-        m_numCleared++;
     }
 
-    if (m_numCleared >= m_numSqauresToClear) {
+    if (m_board.allCellsCleared()) {
         // Player wins
         doGameWon();
     }
@@ -196,8 +207,16 @@ void MainWindow::doGameLost()
 
 void MainWindow::doGameWon()
 {
-    qDebug() << "You win!";
     m_ui->setGameOver();
     // Mark any unflagged mines with flags
     flagAllBombs();
+    QMessageBox msg;
+    msg.setText("You Win!");
+    msg.exec();
+}
+
+void MainWindow::restartClicked(bool checked)
+{
+    Q_UNUSED(checked);
+    startGame();
 }

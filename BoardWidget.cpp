@@ -4,10 +4,14 @@
 
 BoardWidget::BoardWidget(int numRows, int numCols, QWidget *parent) : QWidget(parent)
 {
-    auto layout = new QGridLayout();
-    setLayout(layout);
-    layout->setSpacing(2);
+    m_layout = new QGridLayout();
+    setLayout(m_layout);
+    m_layout->setSpacing(2);
+    init(numRows, numCols);
+}
 
+void BoardWidget::init(int numRows, int numCols)
+{
     m_cells.clear();
     m_numRows = numRows;
     m_numCols = numCols;
@@ -17,13 +21,14 @@ BoardWidget::BoardWidget(int numRows, int numCols, QWidget *parent) : QWidget(pa
             auto cell = new Cell();
             connect(cell, &Cell::clicked, [=]() { click(row, col); });
             connect(cell, &Cell::flagCell, [=]() { rightClick(row, col); });
-            layout->addWidget(cell, row, col);
+            m_layout->addWidget(cell, row, col);
             m_cells.append(cell);
         }
     }
 
     m_gameOver = false;
 }
+
 
 void BoardWidget::clearCell(int row, int col, int count, bool mine)
 {

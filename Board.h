@@ -17,6 +17,7 @@ public:
     bool isFlagged(int row, int col);
     bool isCleared(int row, int col);
     bool mineTriggered();
+    bool allCellsCleared();
     int numSurroundingFlags(int row, int col);
 
 signals:
@@ -41,8 +42,8 @@ private:
     QVector<CellStruct> m_cells;
     int m_rows;
     int m_cols;
+    int m_numLeftToClear;
     bool m_mineTriggered;
-
 };
 
 #endif // BOARD_H
