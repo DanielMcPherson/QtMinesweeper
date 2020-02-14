@@ -29,6 +29,7 @@ Cell::Cell(QWidget *parent) : QWidget(parent)
 
     // Initialize state
     m_color = m_normalColor;
+    m_playingAnimation = false;
     m_cleared = false;
     m_hasMine = false;
     m_showHints = false;
@@ -57,6 +58,7 @@ void Cell::showCount(int count)
 {
     // Clear any image being displayed
     showImage(":/Images/blank.png");
+    m_playingAnimation = false;
 
     // Set text color based on label text
     QString text = QString::number(count);
@@ -69,6 +71,38 @@ void Cell::showCount(int count)
 
     // Redraw label
     m_label->setText(text);
+}
+
+void Cell::playAnimation()
+{
+    m_playingAnimation = true;
+    m_animationCount = 0;
+    showImage(m_animationImages[m_animationCount]);
+    m_timerID = startTimer(m_animationDelay);
+}
+
+void Cell::stopAnimation()
+{
+    m_playingAnimation = false;
+    killTimer(m_timerID);
+}
+
+void Cell::timerEvent(QTimerEvent *event)
+{
+    Q_UNUSED(event);
+    if (m_playingAnimation) {
+        m_animationCount++;
+        if (m_animationCount >= m_animationImages.size()) {
+            if (m_loopingAnimation) {
+                m_animationCount = 0;
+            } else {
+                stopAnimation();
+                // Redraw final animation frame
+                m_animationCount = m_animationImages.size() - 1;
+            }
+        }
+        showImage(m_animationImages[m_animationCount]);
+    }
 }
 
 // Handle mouse event
@@ -128,7 +162,27 @@ void Cell::clear(int count, bool mine)
 void Cell::explode()
 {
     m_cleared = true;
-    showImage(":/Images/explosion3.png");
+    m_animationImages.clear();
+    m_animationImages.append(":/Images/explosionSmoke1.png");
+    m_animationImages.append(":/Images/explosionSmoke2.png");
+    m_animationImages.append(":/Images/explosionSmoke3.png");
+    m_animationImages.append(":/Images/explosionSmoke4.png");
+    m_animationImages.append(":/Images/explosionSmoke5.png");
+    m_animationImages.append(":/Images/blank.png");
+    m_animationImages.append(":/Images/blank.png");
+    m_animationImages.append(":/Images/blank.png");
+    m_animationImages.append(":/Images/blank.png");
+    m_animationImages.append(":/Images/blank.png");
+    m_animationImages.append(":/Images/blank.png");
+    m_animationImages.append(":/Images/blank.png");
+    m_animationImages.append(":/Images/blank.png");
+    m_animationImages.append(":/Images/blank.png");
+    m_animationImages.append(":/Images/blank.png");
+    m_animationImages.append(":/Images/explosionSmoke3.png");
+    m_animationDelay = 100;
+    m_loopingAnimation = false;
+    playAnimation();
+
     m_color = m_explodeColor;
     repaint();
 }
@@ -137,9 +191,15 @@ void Cell::explode()
 void Cell::flag(bool flagged)
 {
     if (flagged) {
-        showImage(":/Images/flagRed1.png");
+        m_animationImages.clear();
+        m_animationImages.append(":/Images/flagRed1.png");
+        m_animationImages.append(":/Images/flagRed2.png");
+        m_animationDelay = 180;
+        m_loopingAnimation = true;
+        playAnimation();
     } else {
         showImage(":/Images/blank.png");
+        stopAnimation();
     }
 }
 

@@ -19,5 +19,10 @@
         <file>Images/flagYellow2.png</file>
         <file>Images/flagYellow_down.png</file>
         <file>Images/blank.png</file>
+        <file>Images/explosionSmoke1.png</file>
+        <file>Images/explosionSmoke2.png</file>
+        <file>Images/explosionSmoke3.png</file>
+        <file>Images/explosionSmoke4.png</file>
+        <file>Images/explosionSmoke5.png</file>
     </qresource>
 </RCC>
