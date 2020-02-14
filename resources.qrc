@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Images/flagRed1.png</file>
+        <file>Images/flagRed2.png</file>
+        <file>Images/flagRed_down.png</file>
+        <file>Images/explosion1.png</file>
+        <file>Images/explosion2.png</file>
+        <file>Images/explosion3.png</file>
+        <file>Images/explosion4.png</file>
+        <file>Images/explosion5.png</file>
+        <file>Images/mine.png</file>
+        <file>Images/flagBlue1.png</file>
+        <file>Images/flagBlue2.png</file>
+        <file>Images/flagBlue_down.png</file>
+        <file>Images/flagGreen1.png</file>
+        <file>Images/flagGreen2.png</file>
+        <file>Images/flagGreen_down.png</file>
+        <file>Images/flagYellow1.png</file>
+        <file>Images/flagYellow2.png</file>
+        <file>Images/flagYellow_down.png</file>
+        <file>Images/blank.png</file>
+    </qresource>
+</RCC>

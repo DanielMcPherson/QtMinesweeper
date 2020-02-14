@@ -4,13 +4,15 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QFont>
+#include <QPixmap>
 #include <QDebug>
 
 Cell::Cell(QWidget *parent) : QWidget(parent)
 {
     // Draw a box with a label inside indicating the cell state
-    setFixedSize(35, 35);
+    setFixedSize(45, 45);
     auto layout = new QHBoxLayout();
+    // Label will either display text (mine count) or an image
     m_label = new QLabel();
     QFont font = m_label->font();
     font.setBold(true);
@@ -19,52 +21,18 @@ Cell::Cell(QWidget *parent) : QWidget(parent)
     layout->setAlignment(Qt::AlignCenter);
     setLayout(layout);
 
-    m_color = Qt::gray;
+    // Background colors
+    m_normalColor = QColor(192, 192, 192, 255);
+    m_highlightColor = QColor(210, 210, 210, 255);
+    m_clearedColor = QColor(220, 220, 220, 255);
+    m_explodeColor = Qt::darkRed;
+
+    // Initialize state
+    m_color = m_normalColor;
     m_cleared = false;
     m_hasMine = false;
     m_showHints = false;
     m_gameOver = false;
-
-    // Use different colors for different surround mine counts
-    m_labelColor["1"] = "Blue";
-    m_labelColor["2"] = "Green";
-    m_labelColor["3"] = "Maroon";
-    m_labelColor["4"] = "DarkBlue";
-    m_labelColor["5"] = "Purple";
-    m_labelColor["6"] = "LightBlue";
-    m_labelColor["7"] = "Yellow";
-    m_labelColor["8"] = "White";
-    m_labelColor["F"] = "DarkRed";
-    m_labelColor["X"] = "Black";
-}
-
-void Cell::setShowHints(bool showHints)
-{
-    m_showHints = showHints;
-}
-
-// Tell the cell it has a mine.
-// Only used for debug/cheat hints. All other mine logic is handled
-// in the game manager.
-void Cell::setMine()
-{
-    m_hasMine = true;
-}
-
-// Update the label with a mine count, mine marker, or flag marker
-void Cell::drawLabel(QString text)
-{
-    // Decorated text to assign to label
-    QString labelText = text;
-
-    // Set text color based on label text
-    QString colorStr = m_labelColor[text];
-    if (!colorStr.isEmpty()) {
-        labelText = QString("<font color='%1'>%2</font>").arg(colorStr).arg(text);
-    }
-
-    // Redraw label
-    m_label->setText(labelText);
 }
 
 // Redraw the cell, using the current color
@@ -74,78 +42,33 @@ void Cell::paintEvent(QPaintEvent *)
     painter.fillRect(rect(), m_color);
 }
 
-// Redraw the cell with a highlight color on mouse hover
-void Cell::enterEvent(QEvent *)
+// Show an image
+void Cell::showImage(QString imagePath)
 {
-    if (m_cleared) {
-        return;
+    QPixmap img;
+    if (!imagePath.isEmpty()) {
+        img.load(imagePath);
     }
-    m_color = Qt::lightGray;
-    // Use a different color for mines if we are showing hints
-    if (m_showHints && m_hasMine) {
-        m_color = Qt::white;
+    m_label->setPixmap(img.scaled(30, 30, Qt::KeepAspectRatio));
+}
+
+// Show mine count
+void Cell::showCount(int count)
+{
+    // Clear any image being displayed
+    showImage(":/Images/blank.png");
+
+    // Set text color based on label text
+    QString text = QString::number(count);
+    static QString labelColor[] = { "Black", "Blue", "Green", "Maroon", "DarkBlue",
+                                    "Purple", "LightBlue", "Yellow", "White" };
+    if (count > 0 && count < 9) {
+        QString colorStr = labelColor[count];
+        text = QString("<font color='%1'>%2</font>").arg(colorStr).arg(text);
     }
-    repaint();
-}
 
-// Redraw the cell in the original color when the mouse leaves
-void Cell::leaveEvent(QEvent *)
-{
-    if (m_cleared) {
-        return;
-    }
-    m_color = Qt::gray;
-    repaint();
-}
-
-// Called when player clears a cell that contains a mine
-void Cell::explode()
-{
-    m_cleared = true;
-    m_color = Qt::red;
-    QString labelText = "<font color=yellow>X</font>";
-    m_label->setText(labelText);
-    repaint();
-}
-
-void Cell::setGameOver()
-{
-    m_gameOver = true;
-}
-
-// Show the contents of a cell
-void Cell::clear(int count, bool mine)
-{
-    m_cleared = true;
-    m_color = Qt::lightGray;
-    QString labelText = "";
-    if (mine) {
-        labelText = "X";
-    } else if (count > 0) {
-        labelText = QString::number(count);
-    }
-    drawLabel(labelText);
-    repaint();
-}
-
-// Flag or unflag a cell
-void Cell::flag(bool flagged)
-{
-    if (flagged) {
-        drawLabel("F");
-    } else {
-        drawLabel("");
-    }
-}
-
-// Called at game end to show that player incorrectly flagged a
-// cell that does not contain a mine
-void Cell::misflag()
-{
-    // Draw flag on a red background
-    m_color = Qt::red;
-    drawLabel("F");
-    repaint();
+    // Redraw label
+    m_label->setText(text);
 }
 
 // Handle mouse event
@@ -163,3 +86,90 @@ void Cell::mousePressEvent(QMouseEvent *event)
         emit flagCell();
     }
 }
+
+// Redraw the cell with a highlight color on mouse hover
+void Cell::enterEvent(QEvent *)
+{
+    if (m_cleared) {
+        return;
+    }
+    m_color = m_highlightColor;
+    // Use a different color for mines if we are showing hints
+    if (m_showHints && m_hasMine) {
+        m_color = Qt::white;
+    }
+    repaint();
+}
+
+// Redraw the cell in the original color when the mouse leaves
+void Cell::leaveEvent(QEvent *)
+{
+    if (m_cleared) {
+        return;
+    }
+    m_color = m_normalColor;
+    repaint();
+}
+
+// Show the contents of a cell
+void Cell::clear(int count, bool mine)
+{
+    m_cleared = true;
+    if (mine) {
+        showImage(":/Images/mine.png");
+    } else if (count > 0) {
+        showCount(count);
+    }
+    m_color = m_clearedColor;
+    repaint();
+}
+
+// Called when player clears a cell that contains a mine
+void Cell::explode()
+{
+    m_cleared = true;
+    showImage(":/Images/explosion3.png");
+    m_color = m_explodeColor;
+    repaint();
+}
+
+// Flag or unflag a cell
+void Cell::flag(bool flagged)
+{
+    if (flagged) {
+        showImage(":/Images/flagRed1.png");
+    } else {
+        showImage(":/Images/blank.png");
+    }
+}
+
+// Called at game end to show that player incorrectly flagged a
+// cell that does not contain a mine
+void Cell::misflag()
+{
+    // Draw flag on a red background
+    showImage(":/Images/flagRed1.png");
+    m_color = m_explodeColor;
+    repaint();
+}
+
+// Called to show debug/cheat hints
+void Cell::setShowHints(bool showHints)
+{
+    m_showHints = showHints;
+}
+
+// Tell the cell it has a mine.
+// Only used for debug/cheat hints. All other mine logic is handled
+// in the game manager.
+void Cell::setMine()
+{
+    m_hasMine = true;
+}
+
+// Set game over. Don't respond to move events.
+void Cell::setGameOver()
+{
+    m_gameOver = true;
+}
+

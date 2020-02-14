@@ -25,9 +25,9 @@ MainWindow::MainWindow(QWidget *parent)
     mainLayout->addWidget(m_ui);
 
     auto buttonLayout = new QHBoxLayout();
-    auto restartButton = new QPushButton("Start Over");
-    connect(restartButton, &QPushButton::clicked, this, &MainWindow::restartClicked);
-    buttonLayout->addWidget(restartButton);
+    m_restartButton = new QPushButton(tr("Start Over"));
+    connect(m_restartButton, &QPushButton::clicked, this, &MainWindow::restartClicked);
+    buttonLayout->addWidget(m_restartButton);
     mainLayout->addLayout(buttonLayout);
 
     QWidget *centralWidget = new QWidget;
@@ -57,6 +57,7 @@ void MainWindow::startGame()
         }
     }
     m_ui->showHints(false);
+    m_restartButton->setText(tr("Start Over"));
 }
 
 void MainWindow::cellClicked(int row, int col)
@@ -202,6 +203,7 @@ void MainWindow::doGameLost()
 {
     qDebug() << "You lose!";
     m_ui->setGameOver();
+    m_restartButton->setText(tr("Play Again"));
     clearAllCells();
 }
 
@@ -211,8 +213,9 @@ void MainWindow::doGameWon()
     // Mark any unflagged mines with flags
     flagAllBombs();
     QMessageBox msg;
-    msg.setText("You Win!");
+    msg.setText(tr("You Win!"));
     msg.exec();
+    m_restartButton->setText(tr("Play Again"));
 }
 
 void MainWindow::restartClicked(bool checked)

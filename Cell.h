@@ -35,10 +35,15 @@ protected:
     void mousePressEvent(QMouseEvent *event);
 
 private:
-    void drawLabel(QString text);
+    void showImage(QString imagePath);
+    void showCount(int count);
 
 private:
     QColor m_color;
+    QColor m_normalColor;
+    QColor m_highlightColor;
+    QColor m_clearedColor;
+    QColor m_explodeColor;
     QLabel *m_label;
     QMap<QString, QString> m_labelColor;
     bool m_cleared;

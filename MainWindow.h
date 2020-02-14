@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QPushButton>
 #include <QVector>
 #include "Board.h"
 #include "BoardWidget.h"
@@ -35,6 +36,8 @@ private:
     int m_numMines;
     Board m_board;
     BoardWidget *m_ui;
+    QPushButton *m_restartButton;
+    QPushButton *m_button;
 };
 
 #endif // MAINWINDOW_H
