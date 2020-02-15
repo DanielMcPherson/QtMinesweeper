@@ -1,6 +1,8 @@
 #include "MainWindow.h"
 
 #include <QLayout>
+#include <QMenuBar>
+#include <QApplication>
 #include <QPushButton>
 #include <QMessageBox>
 #include <QStack>
@@ -20,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_ui = new BoardWidget(m_boardSize, m_boardSize);
     mainLayout->addWidget(m_ui);
 
+    // Restart button centered at bottom of window
     auto buttonLayout = new QHBoxLayout();
     m_restartButton = new QPushButton(tr("Start Over"));
     m_restartButton->setMinimumWidth(200);
@@ -29,9 +32,20 @@ MainWindow::MainWindow(QWidget *parent)
     buttonLayout->addStretch();
     mainLayout->addLayout(buttonLayout);
 
+    // Set window to main layout created above
     QWidget *centralWidget = new QWidget;
     centralWidget->setLayout(mainLayout);
     setCentralWidget(centralWidget);
+
+    // File menu
+    // Create file menu
+    auto fileMenu = menuBar()->addMenu(tr("File"));
+    // Exit menu item
+    QAction *exitAction = new QAction(tr("E&xit"));
+    exitAction->setShortcuts(QKeySequence::Close);
+    fileMenu->addAction(exitAction);
+    connect(exitAction, &QAction::triggered, this, &MainWindow::exit);
+
 
     // Game manager controls the state of the game
     m_gameManager = new GameManager();
@@ -73,4 +87,10 @@ void MainWindow::winGame()
 void MainWindow::loseGame()
 {
     m_restartButton->setText(tr("Play Again"));
+}
+
+void MainWindow::exit()
+{
+    qDebug() << Q_FUNC_INFO;
+    QApplication::quit();
 }

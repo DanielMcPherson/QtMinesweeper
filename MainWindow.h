@@ -21,6 +21,7 @@ private slots:
     void restartClicked(bool checked);
     void winGame();
     void loseGame();
+    void exit();
 
 private:
     int m_boardSize;
