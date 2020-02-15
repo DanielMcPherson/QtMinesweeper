@@ -22,8 +22,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     auto buttonLayout = new QHBoxLayout();
     m_restartButton = new QPushButton(tr("Start Over"));
+    m_restartButton->setMinimumWidth(200);
     connect(m_restartButton, &QPushButton::clicked, this, &MainWindow::restartClicked);
+    buttonLayout->addStretch();
     buttonLayout->addWidget(m_restartButton);
+    buttonLayout->addStretch();
     mainLayout->addLayout(buttonLayout);
 
     QWidget *centralWidget = new QWidget;
