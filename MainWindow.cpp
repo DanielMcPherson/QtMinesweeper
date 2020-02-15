@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     auto buttonLayout = new QHBoxLayout();
     m_restartButton = new QPushButton(tr("Start Over"));
     m_restartButton->setMinimumWidth(200);
-    connect(m_restartButton, &QPushButton::clicked, this, &MainWindow::restartClicked);
+    connect(m_restartButton, &QPushButton::clicked, this, &MainWindow::restartGame);
     buttonLayout->addStretch();
     buttonLayout->addWidget(m_restartButton);
     buttonLayout->addStretch();
@@ -37,13 +37,38 @@ MainWindow::MainWindow(QWidget *parent)
     centralWidget->setLayout(mainLayout);
     setCentralWidget(centralWidget);
 
-    // File menu
-    // Create file menu
-    auto fileMenu = menuBar()->addMenu(tr("File"));
+    // Menus
+    // Create Mines menu
+    auto minesMenu = menuBar()->addMenu(tr("Mines"));
+    // New game item
+    auto newGameAction = new QAction(tr("New Game"));
+    connect(newGameAction, &QAction::triggered, this, &MainWindow::restartGame);
+    minesMenu->addAction(newGameAction);
+    // Difficulty
+    minesMenu->addSeparator()->setText(tr("Difficulty"));
+    auto easyAction = new QAction(tr("Easy"));
+    easyAction->setCheckable(true);
+    easyAction->setChecked(true);
+    auto mediumAction = new QAction(tr("Medium"));
+    mediumAction->setCheckable(true);
+    auto hardAction = new QAction(tr("Hard"));
+    hardAction->setChecked(true);
+    auto customAction = new QAction(tr("Custom"));
+    customAction->setCheckable(true);
+    minesMenu->addAction(easyAction);
+    minesMenu->addAction(mediumAction);
+    minesMenu->addAction(hardAction);
+    minesMenu->addAction(customAction);
+    auto difficultyGroup = new QActionGroup(this);
+    difficultyGroup->addAction(easyAction);
+    difficultyGroup->addAction(mediumAction);
+    difficultyGroup->addAction(hardAction);
+    difficultyGroup->addAction(customAction);
     // Exit menu item
-    QAction *exitAction = new QAction(tr("E&xit"));
+    minesMenu->addSeparator();
+    auto exitAction = new QAction(tr("E&xit"));
     exitAction->setShortcuts(QKeySequence::Close);
-    fileMenu->addAction(exitAction);
+    minesMenu->addAction(exitAction);
     connect(exitAction, &QAction::triggered, this, &MainWindow::exit);
 
 
@@ -70,7 +95,7 @@ void MainWindow::startGame()
     m_restartButton->setText(tr("Start Over"));
 }
 
-void MainWindow::restartClicked(bool checked)
+void MainWindow::restartGame(bool checked)
 {
     Q_UNUSED(checked);
     startGame();
@@ -91,6 +116,10 @@ void MainWindow::loseGame()
 
 void MainWindow::exit()
 {
-    qDebug() << Q_FUNC_INFO;
     QApplication::quit();
+}
+
+void MainWindow::setDifficulty(int size)
+{
+    qDebug() << Q_FUNC_INFO << size;
 }

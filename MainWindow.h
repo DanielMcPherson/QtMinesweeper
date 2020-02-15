@@ -18,10 +18,11 @@ private:
     void startGame();
 
 private slots:
-    void restartClicked(bool checked);
+    void restartGame(bool checked);
     void winGame();
     void loseGame();
     void exit();
+    void setDifficulty(int size);
 
 private:
     int m_boardSize;
