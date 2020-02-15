@@ -3,10 +3,8 @@
 
 #include <QMainWindow>
 #include <QPushButton>
-#include <QVector>
-#include "Board.h"
 #include "BoardWidget.h"
-#include "Cell.h"
+#include "GameManager.h"
 
 class MainWindow : public QMainWindow
 {
@@ -18,23 +16,16 @@ public:
 
 private:
     void startGame();
-    bool isValidCell(int row, int col);
-    void doGameLost();
-    void doGameWon();
-    void clearCell(int row, int col);
-    void clearNeighboringCells(int row, int col);
-    void clearAllCells();
-    void flagAllBombs();
 
 private slots:
-    void cellClicked(int row, int col);
-    void flagCell(int row, int col);
     void restartClicked(bool checked);
+    void winGame();
+    void loseGame();
 
 private:
     int m_boardSize;
     int m_numMines;
-    Board m_board;
+    GameManager *m_gameManager;
     BoardWidget *m_ui;
     QPushButton *m_restartButton;
     QPushButton *m_button;
