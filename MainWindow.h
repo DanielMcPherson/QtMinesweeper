@@ -25,7 +25,8 @@ private slots:
     void setDifficulty(int size);
 
 private:
-    int m_boardSize;
+    int m_rows;
+    int m_cols;
     int m_numMines;
     GameManager *m_gameManager;
     BoardWidget *m_ui;

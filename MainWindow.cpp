@@ -15,11 +15,12 @@ MainWindow::MainWindow(QWidget *parent)
     auto mainLayout = new QVBoxLayout();
 
     // Maintain board state seperately from UI
-    m_boardSize = 8;
+    m_rows = 8;
+    m_cols = 8;
     m_numMines = 10;
 
     // Widget to display Minesweeper UI
-    m_ui = new BoardWidget(m_boardSize, m_boardSize);
+    m_ui = new BoardWidget(m_rows, m_cols);
     mainLayout->addWidget(m_ui);
 
     // Restart button centered at bottom of window
@@ -38,37 +39,29 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(centralWidget);
 
     // Menus
-    // Create Mines menu
-    auto minesMenu = menuBar()->addMenu(tr("Mines"));
+    // Create Game menu
+    auto gameMenu = menuBar()->addMenu(tr("Game"));
     // New game item
     auto newGameAction = new QAction(tr("New Game"));
     connect(newGameAction, &QAction::triggered, this, &MainWindow::restartGame);
-    minesMenu->addAction(newGameAction);
+    gameMenu->addAction(newGameAction);
     // Difficulty
-    minesMenu->addSeparator()->setText(tr("Difficulty"));
-    auto easyAction = new QAction(tr("Easy"));
-    easyAction->setCheckable(true);
-    easyAction->setChecked(true);
-    auto mediumAction = new QAction(tr("Medium"));
-    mediumAction->setCheckable(true);
-    auto hardAction = new QAction(tr("Hard"));
-    hardAction->setChecked(true);
-    auto customAction = new QAction(tr("Custom"));
-    customAction->setCheckable(true);
-    minesMenu->addAction(easyAction);
-    minesMenu->addAction(mediumAction);
-    minesMenu->addAction(hardAction);
-    minesMenu->addAction(customAction);
+    gameMenu->addSeparator()->setText(tr("Difficulty"));
     auto difficultyGroup = new QActionGroup(this);
-    difficultyGroup->addAction(easyAction);
-    difficultyGroup->addAction(mediumAction);
-    difficultyGroup->addAction(hardAction);
-    difficultyGroup->addAction(customAction);
+    QStringList difficultyLevels = { tr("Easy"), tr("Medium"), tr("Hard"), tr("Custom") };
+    for (int i = 0; i < difficultyLevels.size(); i++) {
+        auto action = new QAction(difficultyLevels[i]);
+        action->setCheckable(true);
+        action->setChecked(i == 0);
+        connect(action, &QAction::triggered, this,  [=]() {this->setDifficulty(i);});
+        gameMenu->addAction(action);
+        difficultyGroup->addAction(action);
+    }
     // Exit menu item
-    minesMenu->addSeparator();
+    gameMenu->addSeparator();
     auto exitAction = new QAction(tr("E&xit"));
     exitAction->setShortcuts(QKeySequence::Close);
-    minesMenu->addAction(exitAction);
+    gameMenu->addAction(exitAction);
     connect(exitAction, &QAction::triggered, this, &MainWindow::exit);
 
 
@@ -81,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent)
     // of UIs to game manager
     m_gameManager->setUI(m_ui);
 
+    // Start game
     startGame();
 }
 
@@ -91,8 +85,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::startGame()
 {
-    m_gameManager->startGame(m_boardSize, m_boardSize, m_numMines);
+    m_gameManager->startGame(m_rows, m_cols, m_numMines);
     m_restartButton->setText(tr("Start Over"));
+
+    // Wait for processEvents to redraw widget
+    QApplication::processEvents();
+    // Resize window to minimum size required to display all widgets
+    resize(0, 0);
 }
 
 void MainWindow::restartGame(bool checked)
@@ -121,5 +120,29 @@ void MainWindow::exit()
 
 void MainWindow::setDifficulty(int size)
 {
-    qDebug() << Q_FUNC_INFO << size;
+    switch (size) {
+    case 0:
+    default:
+        m_rows = 8;
+        m_cols = 8;
+        m_numMines = 10;
+        break;
+    case 1:
+        m_rows = 16;
+        m_cols = 16;
+        m_numMines = 40;
+        break;
+    case 2:
+        m_rows = 16;
+        m_cols = 30;
+        m_numMines = 99;
+        break;
+    case 3:
+        m_rows = 12;
+        m_cols = 20;
+        m_numMines = 80;
+        break;
+    }
+
+    startGame();
 }

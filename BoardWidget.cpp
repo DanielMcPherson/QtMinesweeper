@@ -12,10 +12,19 @@ BoardWidget::BoardWidget(int numRows, int numCols, QWidget *parent) : QWidget(pa
 
 void BoardWidget::init(int numRows, int numCols)
 {
-    m_cells.clear();
+    // Remove old cells from layout
+    QLayoutItem* item;
+    while ((item = m_layout->takeAt(0)) != nullptr) {
+        delete item->widget();
+        delete item;
+    }
+
+    // Remember board dimensions
     m_numRows = numRows;
     m_numCols = numCols;
 
+    // Add new cells
+    m_cells.clear();
     for (int row = 0; row < m_numRows; row++) {
         for (int col = 0; col < m_numCols; col++) {
             auto cell = new Cell();
@@ -25,7 +34,6 @@ void BoardWidget::init(int numRows, int numCols)
             m_cells.append(cell);
         }
     }
-
     m_gameOver = false;
 }
 
