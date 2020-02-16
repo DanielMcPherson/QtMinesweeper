@@ -1,6 +1,8 @@
 # QtMinesweeper
 Minesweeper game written in C++ with Qt widgets
 
+<img src=Images/Minesweeper.png>
+
 ## Credits
 Programming by Daniel McPherson
 
