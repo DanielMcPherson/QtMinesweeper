@@ -28,6 +28,9 @@ private:
     int m_rows;
     int m_cols;
     int m_numMines;
+    int m_custRows;
+    int m_custCols;
+    int m_percentMines;
     GameManager *m_gameManager;
     BoardWidget *m_ui;
     QPushButton *m_restartButton;

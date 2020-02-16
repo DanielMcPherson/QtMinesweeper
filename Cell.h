@@ -20,7 +20,8 @@ public:
     void flag(bool flagged);
     void misflag();
     void explode();
-    void setGameOver();
+    void gameWon();
+    void gameLost();
 
 signals:
     void clicked();
@@ -52,6 +53,7 @@ private:
     // State
     bool m_cleared;
     bool m_hasMine;
+    bool m_flagged;
     bool m_gameOver;
     bool m_showHints;
     // Animations

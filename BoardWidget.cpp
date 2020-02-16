@@ -108,10 +108,17 @@ Cell *BoardWidget::getCell(int row, int col)
     return cell;
 }
 
-void BoardWidget::setGameOver()
+void BoardWidget::gameWon()
 {
     foreach (Cell *cell, m_cells) {
-        cell->setGameOver();
+        cell->gameWon();
+    }
+}
+
+void BoardWidget::gameLost()
+{
+    foreach (Cell *cell, m_cells) {
+        cell->gameLost();
     }
 }
 

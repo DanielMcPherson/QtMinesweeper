@@ -30,14 +30,16 @@ SOURCES += \
     Cell.cpp \
     Board.cpp \
     BoardWidget.cpp \
-    GameManager.cpp
+    GameManager.cpp \
+    BoardSizeDialog.cpp
 
 HEADERS += \
         MainWindow.h \
     Cell.h \
     Board.h \
     BoardWidget.h \
-    GameManager.h
+    GameManager.h \
+    BoardSizeDialog.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

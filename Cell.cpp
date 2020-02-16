@@ -32,6 +32,7 @@ Cell::Cell(QWidget *parent) : QWidget(parent)
     m_playingAnimation = false;
     m_cleared = false;
     m_hasMine = false;
+    m_flagged = false;
     m_showHints = false;
     m_gameOver = false;
 }
@@ -190,6 +191,8 @@ void Cell::explode()
 // Flag or unflag a cell
 void Cell::flag(bool flagged)
 {
+    m_flagged = flagged;
+
     if (flagged) {
         m_animationImages.clear();
         m_animationImages.append(":/Images/flagRed1.png");
@@ -198,8 +201,8 @@ void Cell::flag(bool flagged)
         m_loopingAnimation = true;
         playAnimation();
     } else {
-        showImage(":/Images/blank.png");
         stopAnimation();
+        showImage(":/Images/blank.png");
     }
 }
 
@@ -208,6 +211,7 @@ void Cell::flag(bool flagged)
 void Cell::misflag()
 {
     // Draw flag on a red background
+    stopAnimation();
     showImage(":/Images/flagRed1.png");
     m_color = m_explodeColor;
     repaint();
@@ -227,9 +231,34 @@ void Cell::setMine()
     m_hasMine = true;
 }
 
-// Set game over. Don't respond to move events.
-void Cell::setGameOver()
+// Player won
+void Cell::gameWon()
 {
+    // Flags wave faster after winning
+    if (m_flagged) {
+        stopAnimation();
+        m_animationImages.clear();
+        m_animationImages.append(":/Images/flagRed1.png");
+        m_animationImages.append(":/Images/flagRed2.png");
+        m_animationDelay = 100;
+        m_loopingAnimation = true;
+        playAnimation();
+    }
+
+    // Don't respond to move events
+    m_gameOver = true;
+}
+
+// Player lost
+void Cell::gameLost()
+{
+    // Stop flag waving
+    if (m_flagged) {
+        stopAnimation();
+        showImage(":/Images/flagRed1.png");
+    }
+
+    // Don't respond to move events
     m_gameOver = true;
 }
 

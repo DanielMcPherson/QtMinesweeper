@@ -1,4 +1,5 @@
 #include "MainWindow.h"
+#include "BoardSizeDialog.h"
 
 #include <QLayout>
 #include <QMenuBar>
@@ -14,10 +15,14 @@ MainWindow::MainWindow(QWidget *parent)
 {
     auto mainLayout = new QVBoxLayout();
 
-    // Maintain board state seperately from UI
+    // Default board size
     m_rows = 8;
     m_cols = 8;
     m_numMines = 10;
+    // Default custom size
+    m_custRows = 12;
+    m_custCols = 12;
+    m_percentMines = 16;
 
     // Widget to display Minesweeper UI
     m_ui = new BoardWidget(m_rows, m_cols);
@@ -138,9 +143,15 @@ void MainWindow::setDifficulty(int size)
         m_numMines = 99;
         break;
     case 3:
-        m_rows = 12;
-        m_cols = 20;
-        m_numMines = 80;
+        // ToDo: Add dialog to input number of rows, columns, mines (% mines?)
+        BoardSizeDialog dlg(m_custRows, m_custCols, m_percentMines);
+        dlg.exec();
+        if (dlg.result() == QDialog::Rejected) {
+            return;
+        }
+        m_rows = m_custRows;
+        m_cols = m_custCols;
+        m_numMines = static_cast<int>(m_rows * m_cols * m_percentMines / 100);
         break;
     }
 

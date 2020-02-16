@@ -16,7 +16,8 @@ public:
     void flagCell(int row, int col, bool flagged);
     void misflagCell(int row, int col);
     void explode(int row, int col);
-    void setGameOver();
+    void gameWon();
+    void gameLost();
     void setMine(int row, int col);
     void showHints(bool showHints);
 

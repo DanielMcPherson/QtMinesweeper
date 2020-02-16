@@ -169,8 +169,11 @@ void GameManager::clearAllCells()
     for (int row = 0; row < m_rows; row++) {
         for (int col = 0; col < m_cols; col++) {
             if (!m_board->isCleared(row, col)) {
-                m_board->clearCell(row, col);
-                m_ui->clearCell(row, col, m_board->mineCount(row, col), m_board->hasMine(row, col));
+                // Clear non-flagged cells
+                if (!m_board->isFlagged(row, col)) {
+                    m_board->clearCell(row, col);
+                    m_ui->clearCell(row, col, m_board->mineCount(row, col), m_board->hasMine(row, col));
+                }
                 // Mark incorrectly flagged cells
                 if (m_board->isFlagged(row, col) && !m_board->hasMine(row, col)) {
                     m_ui->misflagCell(row, col);
@@ -196,7 +199,7 @@ void GameManager::flagAllBombs()
 // Player loses
 void GameManager::doGameLost()
 {
-    m_ui->setGameOver();
+    m_ui->gameLost();
     clearAllCells();
     emit gameLost();
 }
@@ -204,7 +207,7 @@ void GameManager::doGameLost()
 // Player wins
 void GameManager::doGameWon()
 {
-    m_ui->setGameOver();
+    m_ui->gameWon();
     flagAllBombs();
     emit gameWon();
 }
