@@ -51,7 +51,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(newGameAction, &QAction::triggered, this, &MainWindow::restartGame);
     gameMenu->addAction(newGameAction);
     // Difficulty
-    gameMenu->addSeparator()->setText(tr("Difficulty"));
+    gameMenu->addSeparator();
+    auto difficultyMenu = new QMenu(tr("Difficulty"));
     auto difficultyGroup = new QActionGroup(this);
     QStringList difficultyLevels = { tr("Easy"), tr("Medium"), tr("Hard"), tr("Custom") };
     for (int i = 0; i < difficultyLevels.size(); i++) {
@@ -59,9 +60,10 @@ MainWindow::MainWindow(QWidget *parent)
         action->setCheckable(true);
         action->setChecked(i == 0);
         connect(action, &QAction::triggered, this,  [=]() {this->setDifficulty(i);});
-        gameMenu->addAction(action);
+        difficultyMenu->addAction(action);
         difficultyGroup->addAction(action);
     }
+    gameMenu->addMenu(difficultyMenu);
     // Exit menu item
     gameMenu->addSeparator();
     auto exitAction = new QAction(tr("E&xit"));
