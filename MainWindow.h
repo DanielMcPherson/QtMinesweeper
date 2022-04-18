@@ -23,6 +23,7 @@ private slots:
     void loseGame();
     void exit();
     void setDifficulty(int size);
+    void showAboutDialog();
 
 private:
     int m_rows;

@@ -70,7 +70,12 @@ MainWindow::MainWindow(QWidget *parent)
     exitAction->setShortcuts(QKeySequence::Close);
     gameMenu->addAction(exitAction);
     connect(exitAction, &QAction::triggered, this, &MainWindow::exit);
-
+    // Create About menu
+    auto aboutMenu = menuBar()->addMenu(tr("About"));
+    auto aboutAction = new QAction("About Minesweeper");
+    connect(aboutAction, &QAction::triggered, this, &MainWindow::showAboutDialog);
+    aboutMenu->addAction(aboutAction);
+    gameMenu->addMenu(aboutMenu);
 
     // Game manager controls the state of the game
     m_gameManager = new GameManager();
@@ -157,4 +162,17 @@ void MainWindow::setDifficulty(int size)
     }
 
     startGame();
+}
+
+void MainWindow::showAboutDialog()
+{
+    QString str =
+            "Qt Minesweeper\n\n"
+            "Minesweeper written in C++ with Qt Widgets\n\n"
+            "https://github.com/DanielMcPherson/QtMinesweeper";
+
+    QMessageBox msg;
+    msg.setText(str);
+    msg.exec();
+
 }
