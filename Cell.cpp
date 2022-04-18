@@ -116,7 +116,7 @@ void Cell::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton) {
         // Left click to clear a cell
         emit clicked();
-    } else if (event->button() == Qt::RightButton and !m_cleared) {
+    } else if (event->button() == Qt::RightButton && !m_cleared) {
         // Right click to flag a cell
         emit flagCell();
     }
