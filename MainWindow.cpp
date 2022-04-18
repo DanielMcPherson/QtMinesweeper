@@ -145,7 +145,6 @@ void MainWindow::setDifficulty(int size)
         m_numMines = 99;
         break;
     case 3:
-        // ToDo: Add dialog to input number of rows, columns, mines (% mines?)
         BoardSizeDialog dlg(m_custRows, m_custCols, m_percentMines);
         dlg.exec();
         if (dlg.result() == QDialog::Rejected) {
