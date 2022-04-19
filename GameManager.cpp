@@ -1,4 +1,5 @@
 #include "GameManager.h"
+#include "GameSignals.h"
 #include <QPoint>
 #include <QStack>
 #include <QDebug>
@@ -12,14 +13,18 @@ GameManager::GameManager(QObject *parent) : QObject(parent)
 
     // Initialize settings
     m_showHints = false;
+
+    // Connect to Game Signals
+    auto gameSignals = GameSignals::getInstance();
+    connect(gameSignals, &GameSignals::startGame, this, &GameManager::startGame);
+    connect(gameSignals, &GameSignals::playerClickedCell, this, &GameManager::cellClicked);
+    connect(gameSignals, &GameSignals::playerFlaggedCell, this, &GameManager::cellFlagged);
 }
 
 // Link to UI widget
 void GameManager::setUI(BoardWidget *ui)
 {
     m_ui = ui;
-    connect(m_ui, &BoardWidget::cellClicked, this, &GameManager::cellClicked);
-    connect(m_ui, &BoardWidget::cellFlagged, this, &GameManager::cellFlagged);
 }
 
 // Set whether to show hints or not
@@ -199,15 +204,13 @@ void GameManager::flagAllBombs()
 // Player loses
 void GameManager::doGameLost()
 {
-    m_ui->gameLost();
+    emit GameSignals::getInstance()->gameLost();
     clearAllCells();
-    emit gameLost();
 }
 
 // Player wins
 void GameManager::doGameWon()
 {
-    m_ui->gameWon();
+    emit GameSignals::getInstance()->gameWon();
     flagAllBombs();
-    emit gameWon();
 }

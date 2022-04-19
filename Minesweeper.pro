@@ -26,6 +26,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    GameSignals.cpp \
         main.cpp \
         MainWindow.cpp \
     Cell.cpp \
@@ -35,6 +36,7 @@ SOURCES += \
     BoardSizeDialog.cpp
 
 HEADERS += \
+    GameSignals.h \
         MainWindow.h \
     Cell.h \
     Board.h \

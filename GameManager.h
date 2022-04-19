@@ -12,15 +12,13 @@ public:
     explicit GameManager(QObject *parent = nullptr);
     void setUI(BoardWidget *ui);
     void showHints(bool hints);
-    void startGame(int rows, int cols, int mines);
-
-signals:
-    void gameWon();
-    void gameLost();
 
 public slots:
 
 private slots:
+    // Slots to handle GameSignals
+    void startGame(int rows, int cols, int mines);
+    // Internal slots
     void cellClicked(int row, int col);
     void cellFlagged(int row, int col);
 

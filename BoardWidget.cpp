@@ -1,4 +1,5 @@
 #include "BoardWidget.h"
+#include "GameSignals.h"
 #include <QLayout>
 #include <QDebug>
 
@@ -8,6 +9,11 @@ BoardWidget::BoardWidget(int numRows, int numCols, QWidget *parent) : QWidget(pa
     setLayout(m_layout);
     m_layout->setSpacing(2);
     init(numRows, numCols);
+
+    // Connect to Game Signals
+    auto gameSignals = GameSignals::getInstance();
+    connect(gameSignals, &GameSignals::gameWon, this, &BoardWidget::gameWon);
+    connect(gameSignals, &GameSignals::gameLost, this, &BoardWidget::gameLost);
 }
 
 void BoardWidget::init(int numRows, int numCols)
@@ -90,12 +96,14 @@ void BoardWidget::setMine(int row, int col)
 
 void BoardWidget::click(int row, int col)
 {
-    emit cellClicked(row, col);
+    emit GameSignals::getInstance()->playerClickedCell(row, col);
+//    emit cellClicked(row, col);
 }
 
 void BoardWidget::rightClick(int row, int col)
 {
-    emit cellFlagged(row, col);
+    emit GameSignals::getInstance()->playerFlaggedCell(row, col);
+//    emit cellFlagged(row, col);
 }
 
 Cell *BoardWidget::getCell(int row, int col)

@@ -16,8 +16,6 @@ public:
     void flagCell(int row, int col, bool flagged);
     void misflagCell(int row, int col);
     void explode(int row, int col);
-    void gameWon();
-    void gameLost();
     void setMine(int row, int col);
     void showHints(bool showHints);
 
@@ -26,6 +24,10 @@ signals:
     void cellFlagged(int row, int col);
 
 private slots:
+    // Slots to handle Game Signals
+    void gameWon();
+    void gameLost();
+    // Internal slots
     void click(int row, int col);
     void rightClick(int row, int col);
 

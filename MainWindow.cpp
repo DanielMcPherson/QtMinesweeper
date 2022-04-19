@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "BoardSizeDialog.h"
+#include "GameSignals.h"
 
 #include <QLayout>
 #include <QMenuBar>
@@ -78,8 +79,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Game manager controls the state of the game
     m_gameManager = new GameManager();
-    connect(m_gameManager, &GameManager::gameWon, this, &MainWindow::winGame);
-    connect(m_gameManager, &GameManager::gameLost, this, &MainWindow::loseGame);
+
+    // Connect to Game Signals
+    auto gameSignals = GameSignals::getInstance();
+    connect(gameSignals, &GameSignals::gameWon, this, &MainWindow::winGame);
+    connect(gameSignals, &GameSignals::gameLost, this, &MainWindow::loseGame);
+
+//    connect(m_gameManager, &GameManager::gameWon, this, &MainWindow::winGame);
+//    connect(m_gameManager, &GameManager::gameLost, this, &MainWindow::loseGame);
+
     // Link UI widget to game manager
     // Could create a MinesweeperUI interface class and link different implementations
     // of UIs to game manager
@@ -96,7 +104,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::startGame()
 {
-    m_gameManager->startGame(m_rows, m_cols, m_numMines);
+//    m_gameManager->startGame(m_rows, m_cols, m_numMines);
+    emit GameSignals::getInstance()->startGame(m_rows, m_cols, m_numMines);
     m_restartButton->setText(tr("Start Over"));
 
     // Wait for processEvents to redraw widget
