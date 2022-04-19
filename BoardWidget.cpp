@@ -8,16 +8,18 @@ BoardWidget::BoardWidget(int numRows, int numCols, QWidget *parent) : QWidget(pa
     m_layout = new QGridLayout();
     setLayout(m_layout);
     m_layout->setSpacing(2);
-    init(numRows, numCols);
 
     // Connect to Game Signals
     auto gameSignals = GameSignals::getInstance();
+    connect(gameSignals, &GameSignals::startGame, this, &BoardWidget::startGame);
     connect(gameSignals, &GameSignals::gameWon, this, &BoardWidget::gameWon);
     connect(gameSignals, &GameSignals::gameLost, this, &BoardWidget::gameLost);
 }
 
-void BoardWidget::init(int numRows, int numCols)
+void BoardWidget::startGame(int rows, int cols, int mines)
 {
+    Q_UNUSED(mines)
+
     // Remove old cells from layout
     QLayoutItem* item;
     while ((item = m_layout->takeAt(0)) != nullptr) {
@@ -26,8 +28,8 @@ void BoardWidget::init(int numRows, int numCols)
     }
 
     // Remember board dimensions
-    m_numRows = numRows;
-    m_numCols = numCols;
+    m_numRows = rows;
+    m_numCols = cols;
 
     // Add new cells
     m_cells.clear();

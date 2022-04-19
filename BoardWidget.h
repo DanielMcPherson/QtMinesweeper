@@ -11,7 +11,6 @@ class BoardWidget : public QWidget
     Q_OBJECT
 public:
     explicit BoardWidget(int numRows, int numCols, QWidget *parent = nullptr);
-    void init(int numRows, int numCols);
     void clearCell(int row, int col, int count, bool mine);
     void flagCell(int row, int col, bool flagged);
     void misflagCell(int row, int col);
@@ -25,6 +24,7 @@ signals:
 
 private slots:
     // Slots to handle Game Signals
+    void startGame(int rows, int cols, int mines);
     void gameWon();
     void gameLost();
     // Internal slots

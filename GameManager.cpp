@@ -43,9 +43,6 @@ void GameManager::startGame(int rows, int cols, int mines)
     // Initialize board
     m_board->initialize(m_rows, m_cols, m_mines);
 
-    // Initialize UI
-    m_ui->init(m_rows, m_cols);
-
     // Tell the UI the mines are (for debug/cheat hints)
     for (int row = 0; row < m_rows; row++) {
         for (int col = 0; col < m_cols; col++) {
