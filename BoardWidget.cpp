@@ -16,6 +16,7 @@ BoardWidget::BoardWidget(int numRows, int numCols, QWidget *parent) : QWidget(pa
     connect(gameSignals, &GameSignals::gameLost, this, &BoardWidget::gameLost);
     connect(gameSignals, &GameSignals::setCellFlagged, this, &BoardWidget::flagCell);
     connect(gameSignals, &GameSignals::clearCell, this, &BoardWidget::clearCell);
+    connect(gameSignals, &GameSignals::explode, this, &BoardWidget::explode);
 }
 
 void BoardWidget::startGame(int rows, int cols, int mines)

@@ -122,14 +122,13 @@ void GameManager::clearCell(int row, int col)
 
     // If this cell is a mine, game is over
     if (m_board->hasMine(row, col)) {
-        m_ui->explode(row, col);
+        emit GameSignals::getInstance()->explode(row, col);
     }
 
     if (m_board->allCellsCleared()) {
         // Player wins
         doGameWon();
     }
-
 }
 
 // Clear all the neighbors around a cell, either because the player has cleared

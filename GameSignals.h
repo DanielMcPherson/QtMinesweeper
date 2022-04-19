@@ -19,12 +19,15 @@ signals:
     void startGame(int rows, int cols, int mines);
     void gameWon();
     void gameLost();
+    // Game initialization
+    void setMine(int row, int col);
     // Player actions
     void playerClickedCell(int row, int col);
     void playerFlaggedCell(int row, int col);
     // Cell changes
     void setCellFlagged(int row, int col, bool flagged);
     void clearCell(int row, int col, int count, bool hasMine);
+    void explode(int row, int col);
 };
 
 #endif // GAMESIGNALS_H
