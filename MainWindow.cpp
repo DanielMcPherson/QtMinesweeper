@@ -96,7 +96,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::startGame()
 {
-//    m_gameManager->startGame(m_rows, m_cols, m_numMines);
     emit GameSignals::getInstance()->startGame(m_rows, m_cols, m_numMines);
     m_restartButton->setText(tr("Start Over"));
 

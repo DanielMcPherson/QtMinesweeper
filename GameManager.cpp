@@ -1,5 +1,4 @@
 #include "GameManager.h"
-#include "GameSignals.h"
 #include <QPoint>
 #include <QStack>
 #include <QDebug>
@@ -13,10 +12,10 @@ GameManager::GameManager(QObject *parent) : QObject(parent)
     m_showHints = false;
 
     // Connect to Game Signals
-    auto gameSignals = GameSignals::getInstance();
-    connect(gameSignals, &GameSignals::startGame, this, &GameManager::startGame);
-    connect(gameSignals, &GameSignals::playerClickedCell, this, &GameManager::cellClicked);
-    connect(gameSignals, &GameSignals::playerFlaggedCell, this, &GameManager::cellFlagged);
+    m_gameSignals = GameSignals::getInstance();
+    connect(m_gameSignals, &GameSignals::startGame, this, &GameManager::startGame);
+    connect(m_gameSignals, &GameSignals::playerClickedCell, this, &GameManager::cellClicked);
+    connect(m_gameSignals, &GameSignals::playerFlaggedCell, this, &GameManager::cellFlagged);
 }
 
 // Set whether to show hints or not
@@ -39,7 +38,7 @@ void GameManager::startGame(int rows, int cols, int mines)
     for (int row = 0; row < m_rows; row++) {
         for (int col = 0; col < m_cols; col++) {
             if (m_board->hasMine(row, col)) {
-                emit GameSignals::getInstance()->setMine(row, col);
+                m_gameSignals->setMine(row, col);
             }
         }
     }
@@ -100,7 +99,7 @@ void GameManager::cellFlagged(int row, int col)
     // Toggle flag for this cell
     if (!m_board->isCleared(row, col)) {
         m_board->toggleFlag(row, col);
-        emit GameSignals::getInstance()->setCellFlagged(row, col, m_board->isFlagged(row, col));
+        emit m_gameSignals->setCellFlagged(row, col, m_board->isFlagged(row, col));
     }
 }
 
@@ -108,13 +107,13 @@ void GameManager::clearCell(int row, int col)
 {
     // Clear this cell
     m_board->clearCell(row, col);
-    emit GameSignals::getInstance()->clearCell(
+    emit m_gameSignals->clearCell(
                 row, col,
                 m_board->mineCount(row, col), m_board->hasMine(row, col));
 
     // If this cell is a mine, game is over
     if (m_board->hasMine(row, col)) {
-        emit GameSignals::getInstance()->explode(row, col);
+        emit m_gameSignals->explode(row, col);
     }
 
     if (m_board->allCellsCleared()) {
@@ -167,12 +166,12 @@ void GameManager::clearAllCells()
                 // Clear non-flagged cells
                 if (!m_board->isFlagged(row, col)) {
                     m_board->clearCell(row, col);
-                    emit GameSignals::getInstance()->clearCell(
+                    emit m_gameSignals->clearCell(
                                 row, col, m_board->mineCount(row, col), m_board->hasMine(row, col));
                 }
                 // Mark incorrectly flagged cells
                 if (m_board->isFlagged(row, col) && !m_board->hasMine(row, col)) {
-                    emit GameSignals::getInstance()->markIncorrectlyFlaggedCell(row, col);
+                    emit m_gameSignals->markIncorrectlyFlaggedCell(row, col);
                 }
             }
         }
@@ -186,7 +185,7 @@ void GameManager::flagAllBombs()
         for (int col = 0; col < m_cols; col++) {
             // Flag unflagged mines
             if (!m_board->isFlagged(row, col) && m_board->hasMine(row, col)) {
-                emit GameSignals::getInstance()->setCellFlagged(row, col, true);
+                emit m_gameSignals->setCellFlagged(row, col, true);
             }
         }
     }
@@ -195,13 +194,13 @@ void GameManager::flagAllBombs()
 // Player loses
 void GameManager::doGameLost()
 {
-    emit GameSignals::getInstance()->gameLost();
+    emit m_gameSignals->gameLost();
     clearAllCells();
 }
 
 // Player wins
 void GameManager::doGameWon()
 {
-    emit GameSignals::getInstance()->gameWon();
+    emit m_gameSignals->gameWon();
     flagAllBombs();
 }

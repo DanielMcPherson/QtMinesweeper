@@ -2,6 +2,7 @@
 #define GAMEMANAGER_H
 
 #include "Board.h"
+#include "GameSignals.h"
 #include <QObject>
 
 class GameManager : public QObject
@@ -31,6 +32,7 @@ private:
 
 private:
     Board *m_board;
+    GameSignals *m_gameSignals;
     int m_rows;
     int m_cols;
     int m_mines;
