@@ -2,7 +2,6 @@
 #define GAMEMANAGER_H
 
 #include "Board.h"
-#include "BoardWidget.h"
 #include <QObject>
 
 class GameManager : public QObject
@@ -10,7 +9,6 @@ class GameManager : public QObject
     Q_OBJECT
 public:
     explicit GameManager(QObject *parent = nullptr);
-    void setUI(BoardWidget *ui);
     void showHints(bool hints);
 
 public slots:
@@ -33,7 +31,6 @@ private:
 
 private:
     Board *m_board;
-    BoardWidget *m_ui;
     int m_rows;
     int m_cols;
     int m_mines;

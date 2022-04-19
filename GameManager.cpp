@@ -8,8 +8,6 @@ GameManager::GameManager(QObject *parent) : QObject(parent)
 {
     // Internal representation of board
     m_board = new Board();
-    // User interface to get input and display game status
-    m_ui = nullptr;
 
     // Initialize settings
     m_showHints = false;
@@ -19,12 +17,6 @@ GameManager::GameManager(QObject *parent) : QObject(parent)
     connect(gameSignals, &GameSignals::startGame, this, &GameManager::startGame);
     connect(gameSignals, &GameSignals::playerClickedCell, this, &GameManager::cellClicked);
     connect(gameSignals, &GameSignals::playerFlaggedCell, this, &GameManager::cellFlagged);
-}
-
-// Link to UI widget
-void GameManager::setUI(BoardWidget *ui)
-{
-    m_ui = ui;
 }
 
 // Set whether to show hints or not
