@@ -22,6 +22,9 @@ signals:
     // Player actions
     void playerClickedCell(int row, int col);
     void playerFlaggedCell(int row, int col);
+    // Cell changes
+    void setCellFlagged(int row, int col, bool flagged);
+    void clearCell(int row, int col, int count, bool hasMine);
 };
 
 #endif // GAMESIGNALS_H

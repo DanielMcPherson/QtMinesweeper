@@ -108,7 +108,7 @@ void GameManager::cellFlagged(int row, int col)
     // Toggle flag for this cell
     if (!m_board->isCleared(row, col)) {
         m_board->toggleFlag(row, col);
-        m_ui->flagCell(row, col, m_board->isFlagged(row, col));
+        emit GameSignals::getInstance()->setCellFlagged(row, col, m_board->isFlagged(row, col));
     }
 }
 
@@ -116,7 +116,9 @@ void GameManager::clearCell(int row, int col)
 {
     // Clear this cell
     m_board->clearCell(row, col);
-    m_ui->clearCell(row, col, m_board->mineCount(row, col), m_board->hasMine(row, col));
+    emit GameSignals::getInstance()->clearCell(
+                row, col,
+                m_board->mineCount(row, col), m_board->hasMine(row, col));
 
     // If this cell is a mine, game is over
     if (m_board->hasMine(row, col)) {
@@ -174,7 +176,8 @@ void GameManager::clearAllCells()
                 // Clear non-flagged cells
                 if (!m_board->isFlagged(row, col)) {
                     m_board->clearCell(row, col);
-                    m_ui->clearCell(row, col, m_board->mineCount(row, col), m_board->hasMine(row, col));
+                    emit GameSignals::getInstance()->clearCell(
+                                row, col, m_board->mineCount(row, col), m_board->hasMine(row, col));
                 }
                 // Mark incorrectly flagged cells
                 if (m_board->isFlagged(row, col) && !m_board->hasMine(row, col)) {
@@ -192,7 +195,7 @@ void GameManager::flagAllBombs()
         for (int col = 0; col < m_cols; col++) {
             // Flag unflagged mines
             if (!m_board->isFlagged(row, col) && m_board->hasMine(row, col)) {
-                m_ui->flagCell(row, col, true);
+                emit GameSignals::getInstance()->setCellFlagged(row, col, true);
             }
         }
     }
