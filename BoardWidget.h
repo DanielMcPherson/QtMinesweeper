@@ -12,7 +12,6 @@ class BoardWidget : public QWidget
 public:
     explicit BoardWidget(int numRows, int numCols, QWidget *parent = nullptr);
     void misflagCell(int row, int col);
-    void setMine(int row, int col);
     void showHints(bool showHints);
 
 signals:
@@ -24,6 +23,7 @@ private slots:
     void startGame(int rows, int cols, int mines);
     void gameWon();
     void gameLost();
+    void setMine(int row, int col);
     void flagCell(int row, int col, bool flagged);
     void clearCell(int row, int col, int count, bool mine);
     void explode(int row, int col);

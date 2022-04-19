@@ -47,7 +47,7 @@ void GameManager::startGame(int rows, int cols, int mines)
     for (int row = 0; row < m_rows; row++) {
         for (int col = 0; col < m_cols; col++) {
             if (m_board->hasMine(row, col)) {
-                m_ui->setMine(row, col);
+                emit GameSignals::getInstance()->setMine(row, col);
             }
         }
     }
@@ -180,7 +180,7 @@ void GameManager::clearAllCells()
                 }
                 // Mark incorrectly flagged cells
                 if (m_board->isFlagged(row, col) && !m_board->hasMine(row, col)) {
-                    m_ui->misflagCell(row, col);
+                    emit GameSignals::getInstance()->markIncorrectlyFlaggedCell(row, col);
                 }
             }
         }
