@@ -75,7 +75,6 @@ MainWindow::MainWindow(QWidget *parent)
     auto aboutAction = new QAction("About Minesweeper");
     connect(aboutAction, &QAction::triggered, this, &MainWindow::showAboutDialog);
     aboutMenu->addAction(aboutAction);
-    gameMenu->addMenu(aboutMenu);
 
     // Game manager controls the state of the game
     m_gameManager = new GameManager();
