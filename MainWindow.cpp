@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_percentMines = 16;
 
     // Widget to display Minesweeper UI
-    m_ui = new BoardWidget(m_rows, m_cols);
+    m_ui = new BoardWidget();
     mainLayout->addWidget(m_ui);
 
     // Restart button centered at bottom of window
@@ -84,14 +84,6 @@ MainWindow::MainWindow(QWidget *parent)
     auto gameSignals = GameSignals::getInstance();
     connect(gameSignals, &GameSignals::gameWon, this, &MainWindow::winGame);
     connect(gameSignals, &GameSignals::gameLost, this, &MainWindow::loseGame);
-
-//    connect(m_gameManager, &GameManager::gameWon, this, &MainWindow::winGame);
-//    connect(m_gameManager, &GameManager::gameLost, this, &MainWindow::loseGame);
-
-    // Link UI widget to game manager
-    // Could create a MinesweeperUI interface class and link different implementations
-    // of UIs to game manager
-    m_gameManager->setUI(m_ui);
 
     // Start game
     startGame();

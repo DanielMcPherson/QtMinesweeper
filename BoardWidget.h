@@ -10,7 +10,7 @@ class BoardWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit BoardWidget(int numRows, int numCols, QWidget *parent = nullptr);
+    explicit BoardWidget(QWidget *parent = nullptr);
     void showHints(bool showHints);
 
 signals:

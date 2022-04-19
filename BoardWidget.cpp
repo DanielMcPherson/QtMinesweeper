@@ -3,7 +3,7 @@
 #include <QLayout>
 #include <QDebug>
 
-BoardWidget::BoardWidget(int numRows, int numCols, QWidget *parent) : QWidget(parent)
+BoardWidget::BoardWidget(QWidget *parent) : QWidget(parent)
 {
     m_layout = new QGridLayout();
     setLayout(m_layout);
