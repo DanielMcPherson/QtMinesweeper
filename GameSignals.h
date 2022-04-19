@@ -28,6 +28,7 @@ signals:
     void setCellFlagged(int row, int col, bool flagged);
     void clearCell(int row, int col, int count, bool hasMine);
     void explode(int row, int col);
+    void markIncorrectlyFlaggedCell(int row, int col);
 };
 
 #endif // GAMESIGNALS_H

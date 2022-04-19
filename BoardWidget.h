@@ -11,7 +11,6 @@ class BoardWidget : public QWidget
     Q_OBJECT
 public:
     explicit BoardWidget(int numRows, int numCols, QWidget *parent = nullptr);
-    void misflagCell(int row, int col);
     void showHints(bool showHints);
 
 signals:
@@ -27,6 +26,7 @@ private slots:
     void flagCell(int row, int col, bool flagged);
     void clearCell(int row, int col, int count, bool mine);
     void explode(int row, int col);
+    void misflagCell(int row, int col);
     // Internal slots
     void click(int row, int col);
     void rightClick(int row, int col);
