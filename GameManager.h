@@ -17,7 +17,6 @@ class GameManager : public QObject
     Q_OBJECT
 public:
     explicit GameManager(QObject *parent = nullptr);
-    void showHints(bool hints);
 
 private slots:
     void startGame(int rows, int cols, int mines);
@@ -39,7 +38,6 @@ private:
     int m_rows;
     int m_cols;
     int m_mines;
-    bool m_showHints;
 };
 
 #endif // GAMEMANAGER_H

@@ -41,6 +41,7 @@ Cell::Cell(QWidget *parent) : QWidget(parent)
     auto gameSignals = GameSignals::getInstance();
     connect(gameSignals, &GameSignals::gameWon, this, &Cell::gameWon);
     connect(gameSignals, &GameSignals::gameLost, this, &Cell::gameLost);
+    connect(gameSignals, &GameSignals::showHints, this, &Cell::showHints);
 }
 
 // Redraw the cell, using the current color
@@ -257,8 +258,8 @@ void Cell::gameLost()
     m_gameOver = true;
 }
 
-// Called to show debug/cheat hints
-void Cell::setShowHints(bool showHints)
+// Show debug/cheat hints
+void Cell::showHints(bool showHints)
 {
     m_showHints = showHints;
 }

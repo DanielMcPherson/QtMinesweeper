@@ -103,6 +103,9 @@ void MainWindow::startGame()
     QApplication::processEvents();
     // Resize window to minimum size required to display all widgets
     resize(0, 0);
+
+    // Uncomment below to show mine locations for debugging/cheating
+//    emit GameSignals::getInstance()->showHints(true);
 }
 
 void MainWindow::restartGame(bool checked)

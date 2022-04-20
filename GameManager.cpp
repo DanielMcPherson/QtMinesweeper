@@ -8,20 +8,11 @@ GameManager::GameManager(QObject *parent) : QObject(parent)
     // Internal representation of board
     m_board = new Board();
 
-    // Initialize settings
-    m_showHints = false;
-
     // Connect to Game Signals
     m_gameSignals = GameSignals::getInstance();
     connect(m_gameSignals, &GameSignals::startGame, this, &GameManager::startGame);
     connect(m_gameSignals, &GameSignals::playerClickedCell, this, &GameManager::cellClicked);
     connect(m_gameSignals, &GameSignals::playerFlaggedCell, this, &GameManager::cellFlagged);
-}
-
-// Set whether to show hints or not
-void GameManager::showHints(bool hints)
-{
-    m_showHints = hints;
 }
 
 // Start a game

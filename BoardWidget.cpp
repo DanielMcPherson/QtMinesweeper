@@ -125,10 +125,4 @@ Cell *BoardWidget::getCell(int row, int col)
     return cell;
 }
 
-void BoardWidget::showHints(bool showHints)
-{
-    foreach (Cell *cell, m_cells) {
-        cell->setShowHints(showHints);
-    }
-}
 

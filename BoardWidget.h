@@ -15,7 +15,6 @@ class BoardWidget : public QWidget
     Q_OBJECT
 public:
     explicit BoardWidget(QWidget *parent = nullptr);
-    void showHints(bool showHints);
 
 private slots:
     // Slots to handle Game Signals
