@@ -3,6 +3,15 @@
 
 #include <QObject>
 
+// GameSignals contains signals for all game events.
+//
+// Defining these signals here allows the UI and backend game logic
+// to be completely decoupled.
+// The altnerative would be to have signals defined in BoardWidget
+// and/or GameManager and to require at least one of those classes
+// to be aware of each other in order to connect the signals to
+// the taget slots.
+
 class GameSignals : public QObject
 {
     Q_OBJECT
@@ -21,10 +30,10 @@ signals:
     void gameLost();
     // Game initialization
     void setMine(int row, int col);
-    // Player actions
+    // Player actions (from UI)
     void playerClickedCell(int row, int col);
     void playerFlaggedCell(int row, int col);
-    // Cell changes
+    // Game state actions (from backend)
     void setCellFlagged(int row, int col, bool flagged);
     void clearCell(int row, int col, int count, bool hasMine);
     void explode(int row, int col);
