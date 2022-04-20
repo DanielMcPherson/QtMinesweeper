@@ -38,7 +38,7 @@ void GameManager::startGame(int rows, int cols, int mines)
     for (int row = 0; row < m_rows; row++) {
         for (int col = 0; col < m_cols; col++) {
             if (m_board->hasMine(row, col)) {
-                m_gameSignals->setMine(row, col);
+                emit m_gameSignals->setMine(row, col);
             }
         }
     }
@@ -103,6 +103,7 @@ void GameManager::cellFlagged(int row, int col)
     }
 }
 
+// Clear a cell, revealing its contents
 void GameManager::clearCell(int row, int col)
 {
     // Clear this cell

@@ -5,6 +5,13 @@
 #include "GameSignals.h"
 #include <QObject>
 
+// Game logic
+// Maintains the state of the board and determines the new game
+// state given user actions.
+// Connects to GameSignals signals to know when user actions have
+// occurred, and emits signals to communicate updated game state
+// to the UI.
+
 class GameManager : public QObject
 {
     Q_OBJECT
@@ -12,12 +19,8 @@ public:
     explicit GameManager(QObject *parent = nullptr);
     void showHints(bool hints);
 
-public slots:
-
 private slots:
-    // Slots to handle GameSignals
     void startGame(int rows, int cols, int mines);
-    // Internal slots
     void cellClicked(int row, int col);
     void cellFlagged(int row, int col);
 
