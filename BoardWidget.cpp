@@ -1,17 +1,29 @@
 #include "BoardWidget.h"
+#include "GameSignals.h"
 #include <QLayout>
 #include <QDebug>
 
-BoardWidget::BoardWidget(int numRows, int numCols, QWidget *parent) : QWidget(parent)
+BoardWidget::BoardWidget(QWidget *parent) : QWidget(parent)
 {
     m_layout = new QGridLayout();
     setLayout(m_layout);
     m_layout->setSpacing(2);
-    init(numRows, numCols);
+
+    // Connect to Game Signals
+    auto gameSignals = GameSignals::getInstance();
+    connect(gameSignals, &GameSignals::startGame, this, &BoardWidget::startGame);
+    connect(gameSignals, &GameSignals::setCellFlagged, this, &BoardWidget::flagCell);
+    connect(gameSignals, &GameSignals::clearCell, this, &BoardWidget::clearCell);
+    connect(gameSignals, &GameSignals::explode, this, &BoardWidget::explode);
+    connect(gameSignals, &GameSignals::setMine, this, &BoardWidget::setMine);
+    connect(gameSignals, &GameSignals::markIncorrectlyFlaggedCell, this, &BoardWidget::misflagCell);
 }
 
-void BoardWidget::init(int numRows, int numCols)
+// Start game and create Cell widgets
+void BoardWidget::startGame(int rows, int cols, int mines)
 {
+    Q_UNUSED(mines)
+
     // Remove old cells from layout
     QLayoutItem* item;
     while ((item = m_layout->takeAt(0)) != nullptr) {
@@ -20,8 +32,8 @@ void BoardWidget::init(int numRows, int numCols)
     }
 
     // Remember board dimensions
-    m_numRows = numRows;
-    m_numCols = numCols;
+    m_numRows = rows;
+    m_numCols = cols;
 
     // Add new cells
     m_cells.clear();
@@ -37,7 +49,22 @@ void BoardWidget::init(int numRows, int numCols)
     m_gameOver = false;
 }
 
+//
+// User actions
+//
+void BoardWidget::click(int row, int col)
+{
+    emit GameSignals::getInstance()->playerClickedCell(row, col);
+}
 
+void BoardWidget::rightClick(int row, int col)
+{
+    emit GameSignals::getInstance()->playerFlaggedCell(row, col);
+}
+
+//
+// Handle game state updates trigger by game action signals
+//
 void BoardWidget::clearCell(int row, int col, int count, bool mine)
 {
     Cell *cell = getCell(row, col);
@@ -88,16 +115,6 @@ void BoardWidget::setMine(int row, int col)
     cell->setMine();
 }
 
-void BoardWidget::click(int row, int col)
-{
-    emit cellClicked(row, col);
-}
-
-void BoardWidget::rightClick(int row, int col)
-{
-    emit cellFlagged(row, col);
-}
-
 Cell *BoardWidget::getCell(int row, int col)
 {
     Cell *cell = nullptr;
@@ -108,24 +125,4 @@ Cell *BoardWidget::getCell(int row, int col)
     return cell;
 }
 
-void BoardWidget::gameWon()
-{
-    foreach (Cell *cell, m_cells) {
-        cell->gameWon();
-    }
-}
-
-void BoardWidget::gameLost()
-{
-    foreach (Cell *cell, m_cells) {
-        cell->gameLost();
-    }
-}
-
-void BoardWidget::showHints(bool showHints)
-{
-    foreach (Cell *cell, m_cells) {
-        cell->setShowHints(showHints);
-    }
-}
 

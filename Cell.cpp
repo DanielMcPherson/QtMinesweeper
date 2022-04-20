@@ -1,4 +1,5 @@
 #include "Cell.h"
+#include "GameSignals.h"
 #include <QPainter>
 #include <QMouseEvent>
 #include <QHBoxLayout>
@@ -35,6 +36,12 @@ Cell::Cell(QWidget *parent) : QWidget(parent)
     m_flagged = false;
     m_showHints = false;
     m_gameOver = false;
+
+    // Connect to Game Signals
+    auto gameSignals = GameSignals::getInstance();
+    connect(gameSignals, &GameSignals::gameWon, this, &Cell::gameWon);
+    connect(gameSignals, &GameSignals::gameLost, this, &Cell::gameLost);
+    connect(gameSignals, &GameSignals::showHints, this, &Cell::showHints);
 }
 
 // Redraw the cell, using the current color
@@ -44,14 +51,17 @@ void Cell::paintEvent(QPaintEvent *)
     painter.fillRect(rect(), m_color);
 }
 
-// Show an image
-void Cell::showImage(QString imagePath)
+// Show the contents of a cell
+void Cell::clear(int count, bool mine)
 {
-    QPixmap img;
-    if (!imagePath.isEmpty()) {
-        img.load(imagePath);
+    m_cleared = true;
+    if (mine) {
+        showImage(":/Images/mine.png");
+    } else if (count > 0) {
+        showCount(count);
     }
-    m_label->setPixmap(img.scaled(30, 30, Qt::KeepAspectRatio));
+    m_color = m_clearedColor;
+    repaint();
 }
 
 // Show mine count
@@ -74,6 +84,19 @@ void Cell::showCount(int count)
     m_label->setText(text);
 }
 
+// Show an image
+void Cell::showImage(QString imagePath)
+{
+    QPixmap img;
+    if (!imagePath.isEmpty()) {
+        img.load(imagePath);
+    }
+    m_label->setPixmap(img.scaled(30, 30, Qt::KeepAspectRatio));
+}
+
+//
+// Functions to display an animated image
+//
 void Cell::playAnimation()
 {
     m_playingAnimation = true;
@@ -146,19 +169,6 @@ void Cell::leaveEvent(QEvent *)
     repaint();
 }
 
-// Show the contents of a cell
-void Cell::clear(int count, bool mine)
-{
-    m_cleared = true;
-    if (mine) {
-        showImage(":/Images/mine.png");
-    } else if (count > 0) {
-        showCount(count);
-    }
-    m_color = m_clearedColor;
-    repaint();
-}
-
 // Called when player clears a cell that contains a mine
 void Cell::explode()
 {
@@ -217,20 +227,6 @@ void Cell::misflag()
     repaint();
 }
 
-// Called to show debug/cheat hints
-void Cell::setShowHints(bool showHints)
-{
-    m_showHints = showHints;
-}
-
-// Tell the cell it has a mine.
-// Only used for debug/cheat hints. All other mine logic is handled
-// in the game manager.
-void Cell::setMine()
-{
-    m_hasMine = true;
-}
-
 // Player won
 void Cell::gameWon()
 {
@@ -262,3 +258,16 @@ void Cell::gameLost()
     m_gameOver = true;
 }
 
+// Show debug/cheat hints
+void Cell::showHints(bool showHints)
+{
+    m_showHints = showHints;
+}
+
+// Tell the cell it has a mine.
+// Only used for debug/cheat hints. All other mine logic is handled
+// in the game manager.
+void Cell::setMine()
+{
+    m_hasMine = true;
+}

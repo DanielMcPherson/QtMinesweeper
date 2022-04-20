@@ -14,20 +14,20 @@ class Cell : public QWidget
     Q_OBJECT
 public:
     explicit Cell(QWidget *parent = nullptr);
-    void setShowHints(bool showHints);
     void setMine();
     void clear(int count, bool mine);
     void flag(bool flagged);
     void misflag();
     void explode();
-    void gameWon();
-    void gameLost();
 
 signals:
     void clicked();
     void flagCell();
 
-public slots:
+private slots:
+    void gameWon();
+    void gameLost();
+    void showHints(bool showHints);
 
 protected:
     void paintEvent(QPaintEvent *);

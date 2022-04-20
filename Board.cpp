@@ -95,11 +95,13 @@ bool Board::isCleared(int row, int col)
     return m_cells[row * m_cols + col].cleared;
 }
 
+// Has a mine been triggered?
 bool Board::mineTriggered()
 {
     return m_mineTriggered;
 }
 
+// Have all cells been cleared?
 bool Board::allCellsCleared()
 {
     return m_numLeftToClear <= 0;

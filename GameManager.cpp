@@ -7,25 +7,12 @@ GameManager::GameManager(QObject *parent) : QObject(parent)
 {
     // Internal representation of board
     m_board = new Board();
-    // User interface to get input and display game status
-    m_ui = nullptr;
 
-    // Initialize settings
-    m_showHints = false;
-}
-
-// Link to UI widget
-void GameManager::setUI(BoardWidget *ui)
-{
-    m_ui = ui;
-    connect(m_ui, &BoardWidget::cellClicked, this, &GameManager::cellClicked);
-    connect(m_ui, &BoardWidget::cellFlagged, this, &GameManager::cellFlagged);
-}
-
-// Set whether to show hints or not
-void GameManager::showHints(bool hints)
-{
-    m_showHints = hints;
+    // Connect to Game Signals
+    m_gameSignals = GameSignals::getInstance();
+    connect(m_gameSignals, &GameSignals::startGame, this, &GameManager::startGame);
+    connect(m_gameSignals, &GameSignals::playerClickedCell, this, &GameManager::cellClicked);
+    connect(m_gameSignals, &GameSignals::playerFlaggedCell, this, &GameManager::cellFlagged);
 }
 
 // Start a game
@@ -38,14 +25,11 @@ void GameManager::startGame(int rows, int cols, int mines)
     // Initialize board
     m_board->initialize(m_rows, m_cols, m_mines);
 
-    // Initialize UI
-    m_ui->init(m_rows, m_cols);
-
     // Tell the UI the mines are (for debug/cheat hints)
     for (int row = 0; row < m_rows; row++) {
         for (int col = 0; col < m_cols; col++) {
             if (m_board->hasMine(row, col)) {
-                m_ui->setMine(row, col);
+                emit m_gameSignals->setMine(row, col);
             }
         }
     }
@@ -106,26 +90,28 @@ void GameManager::cellFlagged(int row, int col)
     // Toggle flag for this cell
     if (!m_board->isCleared(row, col)) {
         m_board->toggleFlag(row, col);
-        m_ui->flagCell(row, col, m_board->isFlagged(row, col));
+        emit m_gameSignals->setCellFlagged(row, col, m_board->isFlagged(row, col));
     }
 }
 
+// Clear a cell, revealing its contents
 void GameManager::clearCell(int row, int col)
 {
     // Clear this cell
     m_board->clearCell(row, col);
-    m_ui->clearCell(row, col, m_board->mineCount(row, col), m_board->hasMine(row, col));
+    emit m_gameSignals->clearCell(
+                row, col,
+                m_board->mineCount(row, col), m_board->hasMine(row, col));
 
     // If this cell is a mine, game is over
     if (m_board->hasMine(row, col)) {
-        m_ui->explode(row, col);
+        emit m_gameSignals->explode(row, col);
     }
 
     if (m_board->allCellsCleared()) {
         // Player wins
         doGameWon();
     }
-
 }
 
 // Clear all the neighbors around a cell, either because the player has cleared
@@ -172,11 +158,12 @@ void GameManager::clearAllCells()
                 // Clear non-flagged cells
                 if (!m_board->isFlagged(row, col)) {
                     m_board->clearCell(row, col);
-                    m_ui->clearCell(row, col, m_board->mineCount(row, col), m_board->hasMine(row, col));
+                    emit m_gameSignals->clearCell(
+                                row, col, m_board->mineCount(row, col), m_board->hasMine(row, col));
                 }
                 // Mark incorrectly flagged cells
                 if (m_board->isFlagged(row, col) && !m_board->hasMine(row, col)) {
-                    m_ui->misflagCell(row, col);
+                    emit m_gameSignals->markIncorrectlyFlaggedCell(row, col);
                 }
             }
         }
@@ -190,7 +177,7 @@ void GameManager::flagAllBombs()
         for (int col = 0; col < m_cols; col++) {
             // Flag unflagged mines
             if (!m_board->isFlagged(row, col) && m_board->hasMine(row, col)) {
-                m_ui->flagCell(row, col, true);
+                emit m_gameSignals->setCellFlagged(row, col, true);
             }
         }
     }
@@ -199,15 +186,13 @@ void GameManager::flagAllBombs()
 // Player loses
 void GameManager::doGameLost()
 {
-    m_ui->gameLost();
+    emit m_gameSignals->gameLost();
     clearAllCells();
-    emit gameLost();
 }
 
 // Player wins
 void GameManager::doGameWon()
 {
-    m_ui->gameWon();
+    emit m_gameSignals->gameWon();
     flagAllBombs();
-    emit gameWon();
 }
