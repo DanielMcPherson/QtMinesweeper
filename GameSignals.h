@@ -7,10 +7,10 @@
 //
 // Defining these signals here allows the UI and backend game logic
 // to be completely decoupled.
-// The altnerative would be to have signals defined in BoardWidget
+// The alternative would be to have signals defined in BoardWidget
 // and/or GameManager and to require at least one of those classes
 // to be aware of each other in order to connect the signals to
-// the taget slots.
+// the target slots.
 
 class GameSignals : public QObject
 {

@@ -8,7 +8,7 @@
 
 // Widget to provide the minesweeper UI
 // Contains no game logic other than detecting user actions
-// and emitting a signal when an action has occcurred
+// and emitting a signal when an action has occurred
 
 class BoardWidget : public QWidget
 {
