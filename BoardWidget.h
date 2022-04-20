@@ -6,6 +6,10 @@
 #include <QLayout>
 #include <QVector>
 
+// Widget to provide the minesweeper UI
+// Contains no game logic other than detecting user actions
+// and emitting a signal when an action has occcurred
+
 class BoardWidget : public QWidget
 {
     Q_OBJECT
@@ -13,21 +17,15 @@ public:
     explicit BoardWidget(QWidget *parent = nullptr);
     void showHints(bool showHints);
 
-signals:
-    void cellClicked(int row, int col);
-    void cellFlagged(int row, int col);
-
 private slots:
     // Slots to handle Game Signals
     void startGame(int rows, int cols, int mines);
-    void gameWon();
-    void gameLost();
     void setMine(int row, int col);
     void flagCell(int row, int col, bool flagged);
     void clearCell(int row, int col, int count, bool mine);
     void explode(int row, int col);
     void misflagCell(int row, int col);
-    // Internal slots
+    // Slots to handle user actions
     void click(int row, int col);
     void rightClick(int row, int col);
 

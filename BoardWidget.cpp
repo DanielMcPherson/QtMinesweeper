@@ -12,8 +12,6 @@ BoardWidget::BoardWidget(QWidget *parent) : QWidget(parent)
     // Connect to Game Signals
     auto gameSignals = GameSignals::getInstance();
     connect(gameSignals, &GameSignals::startGame, this, &BoardWidget::startGame);
-    connect(gameSignals, &GameSignals::gameWon, this, &BoardWidget::gameWon);
-    connect(gameSignals, &GameSignals::gameLost, this, &BoardWidget::gameLost);
     connect(gameSignals, &GameSignals::setCellFlagged, this, &BoardWidget::flagCell);
     connect(gameSignals, &GameSignals::clearCell, this, &BoardWidget::clearCell);
     connect(gameSignals, &GameSignals::explode, this, &BoardWidget::explode);
@@ -21,6 +19,7 @@ BoardWidget::BoardWidget(QWidget *parent) : QWidget(parent)
     connect(gameSignals, &GameSignals::markIncorrectlyFlaggedCell, this, &BoardWidget::misflagCell);
 }
 
+// Start game and create Cell widgets
 void BoardWidget::startGame(int rows, int cols, int mines)
 {
     Q_UNUSED(mines)
@@ -50,7 +49,22 @@ void BoardWidget::startGame(int rows, int cols, int mines)
     m_gameOver = false;
 }
 
+//
+// User actions
+//
+void BoardWidget::click(int row, int col)
+{
+    emit GameSignals::getInstance()->playerClickedCell(row, col);
+}
 
+void BoardWidget::rightClick(int row, int col)
+{
+    emit GameSignals::getInstance()->playerFlaggedCell(row, col);
+}
+
+//
+// Handle game state updates trigger by game action signals
+//
 void BoardWidget::clearCell(int row, int col, int count, bool mine)
 {
     Cell *cell = getCell(row, col);
@@ -101,18 +115,6 @@ void BoardWidget::setMine(int row, int col)
     cell->setMine();
 }
 
-void BoardWidget::click(int row, int col)
-{
-    emit GameSignals::getInstance()->playerClickedCell(row, col);
-//    emit cellClicked(row, col);
-}
-
-void BoardWidget::rightClick(int row, int col)
-{
-    emit GameSignals::getInstance()->playerFlaggedCell(row, col);
-//    emit cellFlagged(row, col);
-}
-
 Cell *BoardWidget::getCell(int row, int col)
 {
     Cell *cell = nullptr;
@@ -121,20 +123,6 @@ Cell *BoardWidget::getCell(int row, int col)
     }
 
     return cell;
-}
-
-void BoardWidget::gameWon()
-{
-    foreach (Cell *cell, m_cells) {
-        cell->gameWon();
-    }
-}
-
-void BoardWidget::gameLost()
-{
-    foreach (Cell *cell, m_cells) {
-        cell->gameLost();
-    }
 }
 
 void BoardWidget::showHints(bool showHints)
