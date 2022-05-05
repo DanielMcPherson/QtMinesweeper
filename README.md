@@ -3,6 +3,8 @@ Minesweeper game written in C++ with Qt widgets
 
 <img src=Images/Minesweeper.png>
 
+[Play online (compiled for Qt Webassembly)](https://danielmcpherson.github.io/minesweeper/minesweeper.html)
+
 ## Credits
 Programming by Daniel McPherson
 
