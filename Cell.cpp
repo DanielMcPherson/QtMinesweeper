@@ -11,7 +11,7 @@
 Cell::Cell(QWidget *parent) : QWidget(parent)
 {
     // Draw a box with a label inside indicating the cell state
-    setFixedSize(45, 45);
+    setMinimumSize(45, 45);
     auto layout = new QHBoxLayout();
     // Label will either display text (mine count) or an image
     m_label = new QLabel();
@@ -144,6 +144,16 @@ void Cell::mousePressEvent(QMouseEvent *event)
         emit flagCell();
     }
 }
+
+// This keeps the cells square but causes the grid to have extra spaces between cells
+//void Cell::resizeEvent(QResizeEvent *event)
+//{
+//    if (event->size().width() > event->size().height()) {
+//        QWidget::resize(event->size().height(), event->size().height());
+//    } else {
+//        QWidget::resize(event->size().width(), event->size().width());
+//    }
+//}
 
 // Redraw the cell with a highlight color on mouse hover
 void Cell::enterEvent(QEvent *)

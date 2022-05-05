@@ -34,6 +34,7 @@ protected:
     void enterEvent(QEvent *);
     void leaveEvent(QEvent *);
     void mousePressEvent(QMouseEvent *event);
+//    void resizeEvent(QResizeEvent *event);
     void timerEvent(QTimerEvent *event);
 
 private:

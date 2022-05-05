@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QStack>
 #include <QPoint>
+#include <QTimer>
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -65,12 +66,14 @@ MainWindow::MainWindow(QWidget *parent)
         difficultyGroup->addAction(action);
     }
     gameMenu->addMenu(difficultyMenu);
+#ifndef Q_OS_WASM
     // Exit menu item
     gameMenu->addSeparator();
     auto exitAction = new QAction(tr("E&xit"));
     exitAction->setShortcuts(QKeySequence::Close);
     gameMenu->addAction(exitAction);
     connect(exitAction, &QAction::triggered, this, &MainWindow::exit);
+#endif
     // Create About menu
     auto aboutMenu = menuBar()->addMenu(tr("About"));
     auto aboutAction = new QAction("About Minesweeper");
@@ -86,7 +89,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(gameSignals, &GameSignals::gameLost, this, &MainWindow::loseGame);
 
     // Start game
-    startGame();
+    QTimer::singleShot(100, this, &MainWindow::startGame);
 }
 
 MainWindow::~MainWindow()
